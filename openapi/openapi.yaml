@@ -1,0 +1,174 @@
+openapi: 3.0.4
+info:
+  title: Waypoint API
+  version: 1.0.0
+paths:
+  /v1/core/categories:
+    get:
+      operationId: getCoreCategories
+      summary: List categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoriesResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+  /v1/core/ems-categories:
+    get:
+      operationId: getCoreEmsCategories
+      summary: List EMS categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmsCategoriesResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+  /v1/core/ems-themes:
+    get:
+      operationId: getCoreEmsThemes
+      summary: List EMS themes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmsThemesResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+components:
+  responses:
+    Error:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'
+  schemas:
+    Errors:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorMessage'
+    ErrorMessage:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    Metadata:
+      type: object
+      required:
+        - total
+      properties:
+        total:
+          type: integer
+    Category:
+      type: object
+      required:
+        - id
+        - name
+        - emsIds
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        emsIds:
+          type: array
+          items:
+            type: string
+    CategoriesResponse:
+      type: object
+      required:
+        - data
+        - metadata
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    EmsCategory:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    EmsCategoriesResponse:
+      type: object
+      required:
+        - data
+        - metadata
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmsCategory'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    EmsThemeTranslation:
+      type: object
+      required:
+        - language
+        - value
+      properties:
+        language:
+          type: string
+        value:
+          type: string
+        description:
+          type: string
+    EmsTheme:
+      type: object
+      required:
+        - code
+        - translations
+        - emsIds
+        - datasetsCount
+      properties:
+        code:
+          type: string
+        translations:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmsThemeTranslation'
+        emsIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        datasetsCount:
+          type: integer
+    EmsThemesResponse:
+      type: object
+      required:
+        - data
+        - metadata
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmsTheme'
+        metadata:
+          $ref: '#/components/schemas/Metadata'

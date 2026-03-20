@@ -1,0 +1,5 @@
+package: server
+generate:
+  chi-server: true
+  models: true
+  strict-server: true

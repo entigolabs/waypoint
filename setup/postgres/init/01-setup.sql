@@ -1,0 +1,5 @@
+CREATE DATABASE waypoint
+  ENCODING = 'UTF8'
+  LOCALE_PROVIDER = 'icu'
+  ICU_LOCALE = 'et-EE'
+  TEMPLATE = template0;

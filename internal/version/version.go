@@ -1,0 +1,41 @@
+package version
+
+import (
+	"log/slog"
+)
+
+// Version information set by link flags during build. We fall back to these sane
+// default values when we build outside the Makefile context (e.g. go run, go build, or go test).
+var (
+	version   = "0.0.0"                // value from VERSION file
+	buildDate = "1970-01-01T00:00:00Z" // output from `date -u +'%Y-%m-%dT%H:%M:%SZ'`
+	gitCommit = ""                     // output from `git rev-parse HEAD`
+	gitTag    = ""                     // output from `git describe --exact-match --tags HEAD` (if clean tree state)
+)
+
+// Version contains version information.
+type Version struct {
+	Version   string
+	BuildDate string
+	GitCommit string
+	GitTag    string
+}
+
+func (v Version) String() string {
+	return v.Version
+}
+
+// GetVersion returns the version information.
+func GetVersion() Version {
+	return Version{
+		Version:   version,
+		BuildDate: buildDate,
+		GitCommit: gitCommit,
+		GitTag:    gitTag,
+	}
+}
+
+func PrintVersion() {
+	v := GetVersion()
+	slog.Info("Build", "version", v.Version, "Date", v.BuildDate, "GitCommit", v.GitCommit, "GitTag", v.GitTag)
+}
