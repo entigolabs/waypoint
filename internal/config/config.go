@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log/slog"
 	"net/url"
 	"os"
 	"reflect"
@@ -12,21 +11,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-type LogLevel string
-type LogFormat string
-
-const (
-	LogLevelDebug LogLevel = "debug"
-	LogLevelInfo  LogLevel = "info"
-	LogLevelWarn  LogLevel = "warn"
-	LogLevelError LogLevel = "error"
-)
-
-const (
-	LogFormatJSON LogFormat = "json"
-	LogFormatText LogFormat = "text"
-)
-
 // Config stores all configuration of the application.
 // The values are read by viper from a config file or environment variable.
 type Config struct {
@@ -34,23 +18,20 @@ type Config struct {
 	AllowedOrigins []string  `mapstructure:"ALLOWED_ORIGINS" required:"true"`
 	DBURI          string    `mapstructure:"DB_URI" required:"true"`
 	APIBaseURL     string    `mapstructure:"API_BASE_URL" required:"true"`
-	LogLevel       LogLevel  `mapstructure:"LOG_LEVEL" required:"false"`
-	LogFormat      LogFormat `mapstructure:"LOG_FORMAT" required:"false"`
+	LogConfig      LogConfig `mapstructure:",squash"`
 }
 
-// NewLogger creates a slog.Logger configured from the given Config.
-func NewLogger(cfg Config) *slog.Logger {
-	var level slog.Level
-	_ = level.UnmarshalText([]byte(cfg.LogLevel))
+type LogConfig struct {
+	LogLevel  LogLevel  `mapstructure:"LOG_LEVEL"`
+	LogOutput LogOutput `mapstructure:"LOG_OUTPUT"`
+	LogPath   string    `mapstructure:"LOG_PATH" required:"false"`
+}
 
-	opts := &slog.HandlerOptions{Level: level}
-	var handler slog.Handler
-	if cfg.LogFormat == LogFormatText {
-		handler = slog.NewTextHandler(os.Stdout, opts)
-	} else {
-		handler = slog.NewJSONHandler(os.Stdout, opts)
+func (c *Config) Validate() error {
+	if c.LogConfig.LogOutput == LogOutputFile && c.LogConfig.LogPath == "" {
+		return fmt.Errorf("log output file path is required")
 	}
-	return slog.New(handler)
+	return nil
 }
 
 // LoadConfig reads configuration from file or environment variables.
@@ -68,8 +49,8 @@ func LoadConfig(path string) (config Config, err error) {
 	}
 
 	v.SetDefault("SERVER_ADDR", ":8081")
-	v.SetDefault("LOG_LEVEL", "info")
-	v.SetDefault("LOG_FORMAT", "json")
+	v.SetDefault("LOG_LEVEL", LogLevelInfo)
+	v.SetDefault("LOG_OUTPUT", LogOutputStdout)
 
 	if configFile != "" {
 		v.SetConfigName(configFile)
@@ -100,6 +81,9 @@ func LoadConfig(path string) (config Config, err error) {
 	}
 
 	if err := validate(config); err != nil {
+		return config, fmt.Errorf("config validation failed: %w", err)
+	}
+	if err := config.Validate(); err != nil {
 		return config, fmt.Errorf("config validation failed: %w", err)
 	}
 	return config, nil
@@ -162,11 +146,11 @@ func validateField(fieldName string, value interface{}) error {
 		return validateHTTPURL(fieldName, value.(string))
 	case "DBURI":
 		return validateDBURI(value.(string))
-	case "LogFormat":
-		switch value.(LogFormat) {
-		case LogFormatJSON, LogFormatText:
+	case "LogOutput":
+		switch value.(LogOutput) {
+		case LogOutputFile, LogOutputStdout:
 		default:
-			return fmt.Errorf("LOG_FORMAT must be '%s' or '%s'", LogFormatJSON, LogFormatText)
+			return fmt.Errorf("LOG_OUTPUT must be '%s' or '%s'", LogOutputFile, LogOutputStdout)
 		}
 	case "LogLevel":
 		switch value.(LogLevel) {

@@ -19,7 +19,6 @@ import (
 	"github.com/entigolabs/waypoint/internal/version"
 	"github.com/entigolabs/waypoint/server"
 	"github.com/go-chi/chi/v5"
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/cors"
 	"github.com/vingarcia/ksql"
@@ -33,18 +32,26 @@ func main() {
 }
 
 func run() error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	time.Local = time.UTC
 
 	cfg, err := config.LoadConfig(".")
 	if err != nil {
 		return err
 	}
-	slog.SetDefault(config.NewLogger(cfg))
+	logger, closeLogger, err := config.NewLogger(cfg.LogConfig)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if closeLogger != nil {
+			_ = closeLogger(ctx)
+		}
+	}()
+	slog.SetDefault(logger)
 	version.PrintVersion()
 	slog.Debug("Debug enabled")
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	terminated := make(chan os.Signal, 1)
 	signal.Notify(terminated, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -95,7 +102,7 @@ func newRouter(database *db.DB, cfg config.Config) http.Handler {
 
 	r := chi.NewRouter()
 	r.Use(middleware.LoggingMiddleware)
-	r.Use(chimiddleware.Recoverer)
+	r.Use(middleware.RecovererMiddleware)
 	r.Get("/health", server.NewHealthHandler(database))
 	r.Handle("/metrics", promhttp.Handler())
 	r.Mount("/api", publicRouter)

@@ -3,6 +3,7 @@ package middleware
 import (
 	"log/slog"
 	"net/http"
+	"runtime/debug"
 	"time"
 )
 
@@ -17,18 +18,37 @@ func (lrw *LoggingResponseWriter) WriteHeader(code int) {
 	lrw.ResponseWriter.WriteHeader(code)
 }
 
+func RecovererMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if rec := recover(); rec != nil {
+				slog.ErrorContext(r.Context(), "request panicked",
+					"panic", rec,
+					"stack", string(debug.Stack()),
+				)
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
+}
+
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		lrw := &LoggingResponseWriter{ResponseWriter: w, StatusCode: http.StatusOK}
 		defer func() {
-			slog.Info("",
+			attrs := []any{
 				"method", r.Method,
 				"path", r.URL.Path,
 				"status", lrw.StatusCode,
 				"remote", r.RemoteAddr,
 				"duration", time.Since(start),
-				"error", lrw.ErrorMessage)
+			}
+			if lrw.ErrorMessage != "" {
+				attrs = append(attrs, "error", lrw.ErrorMessage)
+			}
+			slog.InfoContext(r.Context(), "", attrs...)
 		}()
 		next.ServeHTTP(lrw, r)
 	})

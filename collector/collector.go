@@ -48,6 +48,11 @@ func (c *Collector) Start(ctx context.Context) {
 }
 
 func (c *Collector) runCollection(ctx context.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			slog.Error("data collection panicked", "panic", r)
+		}
+	}()
 	if err := c.tryCollect(ctx); err != nil {
 		slog.Error("data collection failed", "error", err)
 	}
