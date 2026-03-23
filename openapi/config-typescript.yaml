@@ -1,0 +1,19 @@
+inputSpec: ./openapi/openapi.yaml
+outputDir: ./out/typescript
+generatorName: typescript-fetch
+
+globalProperties:
+  verbose: false
+  apiDocs: false
+  modelDocs: false
+  apiTests: false
+  modelTests: false
+
+npmName: '@entigolabs/waypoint-api'
+npmVersion: '0.0.1'
+snapshot: true
+npmRepository: https://npm.pkg.github.com
+
+gitHost: github.com
+gitUserId: entigolabs
+gitRepoId: waypoint
