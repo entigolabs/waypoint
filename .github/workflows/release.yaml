@@ -16,6 +16,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
+  IMAGE_NAME: waypoint
 
 jobs:
   lint-and-test:
@@ -78,7 +79,7 @@ jobs:
       - id: meta
         uses: docker/metadata-action@v5
         with:
-          images: entigolabs/waypoint
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ needs.changes.outputs.version }}
             type=raw,value=latest
@@ -92,6 +93,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/arm64,linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   build-db:
     name: Build DB
@@ -109,7 +112,7 @@ jobs:
       - id: meta
         uses: docker/metadata-action@v5
         with:
-          images: entigolabs/waypoint-db
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}-db
           tags: |
             type=raw,value=${{ needs.changes.outputs.version }}
             type=raw,value=latest
@@ -123,6 +126,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/arm64,linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   generate-api:
     name: Generate API client

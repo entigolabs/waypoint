@@ -10,8 +10,7 @@ ARG TARGETOS
 ARG GITHUB_SHA=main
 ARG VERSION=latest
 
-RUN --mount=target=. \
-    --mount=type=cache,target=/root/.cache/go-build \
+RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg \
     GOOS="$TARGETOS" GOARCH="$TARGETARCH" CGO_ENABLED=0 go build -ldflags \
     "-X github.com/entigolabs/waypoint/internal/version.version=${VERSION} \
