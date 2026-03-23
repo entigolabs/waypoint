@@ -25,7 +25,8 @@ Supported environment variables:
 * DB_URI - Database URI, for example `postgres://user:password@host:5432/database`
 * API_BASE_URL - URL for the Andmete teabevärav API, for example `https://andmed.eesti.ee/api`
 * LOG_LEVEL - Log level: `debug`, `info`, `warn`, `error`. Default: **info**
-* LOG_FORMAT - Log format: `json`, `text`. Default: **json**
+* LOG_OUTPUT - Log output: `stdout`, `file`. Default: **stdout**
+* LOG_PATH - Log file path, required when LOG_OUTPUT is set to `file`
 
 ## Database
 

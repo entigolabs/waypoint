@@ -94,8 +94,8 @@ func TestLoadConfig_DefaultLogSettings(t *testing.T) {
 
 	cfg, err := LoadConfig(t.TempDir())
 	require.NoError(t, err)
-	assert.Equal(t, LogLevelInfo, cfg.LogLevel)
-	assert.Equal(t, LogFormatJSON, cfg.LogFormat)
+	assert.Equal(t, LogLevelInfo, cfg.LogConfig.LogLevel)
+	assert.Equal(t, LogOutputStdout, cfg.LogConfig.LogOutput)
 }
 
 func TestLoadConfig_InvalidLogLevel(t *testing.T) {
@@ -109,13 +109,13 @@ func TestLoadConfig_InvalidLogLevel(t *testing.T) {
 	assert.Contains(t, err.Error(), "LOG_LEVEL")
 }
 
-func TestLoadConfig_InvalidLogFormat(t *testing.T) {
+func TestLoadConfig_InvalidLogOutput(t *testing.T) {
 	t.Setenv("DB_URI", "postgres://user:pass@localhost/db")
 	t.Setenv("API_BASE_URL", "https://api.example.com")
 	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000")
-	t.Setenv("LOG_FORMAT", "xml")
+	t.Setenv("LOG_OUTPUT", "syslog")
 
 	_, err := LoadConfig(t.TempDir())
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "LOG_FORMAT")
+	assert.Contains(t, err.Error(), "LOG_OUTPUT")
 }
