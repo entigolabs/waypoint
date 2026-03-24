@@ -1,7 +1,7 @@
 import { ConfigProvider, Flex, Layout, Select, Typography, Image } from 'antd';
 import React, { useState } from 'react';
 import entigoLogo from './assets/entigo.svg';
-import { EndpointView } from './components/EndpointView';
+import { DashboardView } from './components/DashboardView';
 import styles from './App.module.scss';
 
 const { Header, Content } = Layout;
@@ -50,7 +50,7 @@ const App: React.FC = () => {
                     </Flex>
                 </Header>
                 <Content className={ styles.content }>
-                    <EndpointView />
+                    <DashboardView />
                 </Content>
             </Layout>
         </ConfigProvider>

@@ -3,8 +3,8 @@ import { axe } from 'jest-axe';
 import { expect, test, vi } from 'vitest';
 import App from './App';
 
-vi.mock('./components/EndpointView', () => ({
-    EndpointView: () => <div>EndpointView</div>,
+vi.mock('./components/DashboardView', () => ({
+    DashboardView: () => <div>DashboardView</div>,
 }));
 
 test('App has no accessibility violations', async () => {
