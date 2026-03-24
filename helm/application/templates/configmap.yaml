@@ -5,7 +5,7 @@ metadata:
 data:
   SERVER_ADDR: ":{{ .Values.server.config.port }}"
   ALLOWED_ORIGINS: {{ .Values.server.config.allowedOrigins | required "config.allowedOrigins is required" | quote }}
-  API_BASE_URL: {{ .Values.server.config.apiBaseUrl | required "config.apiBaseUrl is required" | quote }}'
+  API_BASE_URL: {{ .Values.server.config.apiBaseUrl | required "config.apiBaseUrl is required" | quote }}
   DB_NAME: {{ .Values.database.name | required "database.name is required" | quote }}
   LOG_LEVEL: {{ .Values.server.config.logLevel | quote }}
   LOG_OUTPUT: {{ .Values.server.config.logOutput | quote }}
