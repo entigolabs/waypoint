@@ -7,13 +7,6 @@ const columns = [
     { title: 'Code', dataIndex: 'code', key: 'code' },
     { title: 'Datasets Count', dataIndex: 'datasetsCount', key: 'datasetsCount' },
     {
-        title: 'EMS IDs',
-        dataIndex: 'emsIds',
-        key: 'emsIds',
-        render: (ids: string[]) =>
-            ids.map((id) => <Tag key={ id }>{ id }</Tag>),
-    },
-    {
         title: 'Translations',
         dataIndex: 'translations',
         key: 'translations',
@@ -21,6 +14,13 @@ const columns = [
             translations.map((t) => (
                 <Tag key={ t.language }>{ t.language }: { t.value }</Tag>
             )),
+    },
+    {
+        title: 'EMS IDs',
+        dataIndex: 'emsIds',
+        key: 'emsIds',
+        render: (ids: string[]) =>
+            ids.map((id) => <Tag key={ id }>{ id }</Tag>),
     },
 ];
 
