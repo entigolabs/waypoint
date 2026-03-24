@@ -1,4 +1,4 @@
-import { ConfigProvider, Flex, Layout, Select, Typography } from 'antd';
+import { ConfigProvider, Flex, Layout, Select, Typography, Image } from 'antd';
 import React, { useState } from 'react';
 import entigoLogo from './assets/entigo.svg';
 import { EndpointView } from './components/EndpointView';
@@ -27,7 +27,7 @@ const App: React.FC = () => {
             <Layout className={ styles.layout }>
                 <Header className={ styles.header }>
                     <div className={ styles.logoArea }>
-                        <img src={ entigoLogo } className={ styles.logo } alt="Entigo" />
+                        <Image src={ entigoLogo } className={ styles.logo } alt="Entigo" preview={ false } />
                     </div>
                     <Flex gap={ 16 } align="center">
                         <Flex gap={ 8 } align="center">
