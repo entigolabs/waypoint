@@ -23,7 +23,7 @@ const cc = {
 
 export const getAntdThemeConfig = (): ThemeConfig => ({
     algorithm: theme.darkAlgorithm,
-    cssVar: true,
+    cssVar: {},
     token: {
         colorBgBase: c.colorBgBase,
         colorBgLayout: c.colorBgBase,

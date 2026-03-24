@@ -60,7 +60,7 @@ export function DataTable<T extends object>({ title, columns, rowKey, fetchData,
             </Title>
             <Card className={ styles.card }>
                 { error ? (
-                    <Alert type="error" message={ alertMessage } description={ error.message } showIcon />
+                    <Alert type="error" title={ alertMessage } description={ error.message } showIcon />
                 ) : (
                     <Table
                         dataSource={ data }
