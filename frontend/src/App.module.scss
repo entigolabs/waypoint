@@ -1,0 +1,42 @@
+.layout {
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    border-bottom: 1px solid #1c293d;
+    height: 56px;
+    background-color: #16181c;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logoArea {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo {
+    height: 28px;
+    width: auto;
+}
+
+.title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #dcdcdc !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+}
+
+.content {
+    background-color: #141414;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
