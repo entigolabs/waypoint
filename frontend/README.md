@@ -33,10 +33,9 @@ npm install
 Leave `VITE_API_ENDPOINT` empty to have the frontend call the API at the same origin (useful when served behind a reverse proxy).
 
 ## Development
-To install dependencies and start the development server with hot reload:
+For development, with hot reload:
 
 ```bash
-npm install
 npm run dev
 ```
 
