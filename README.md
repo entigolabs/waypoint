@@ -1,3 +1,3 @@
 # Waypoint
 
-Backend application for Waypoint example application.
+Waypoint example application.
