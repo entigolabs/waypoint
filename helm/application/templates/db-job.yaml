@@ -15,6 +15,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}-db
           image: "{{ .Values.db.image }}:{{ .Values.db.tag | default .Chart.AppVersion }}"
+          resources: {{ toYaml .Values.db.resources | nindent 12 }}
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-db

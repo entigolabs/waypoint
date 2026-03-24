@@ -23,6 +23,7 @@ spec:
                 name: {{ .Release.Name }}-db
             - secretRef:
                 name: {{ .Release.Name }}-db
+          resources: {{ toYaml .Values.db.resources | nindent 12 }}
           volumeMounts:
             - name: tern-config-volume
               mountPath: /tern
@@ -57,6 +58,7 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-api-user
                   key: username
+          resources: {{ toYaml .Values.server.resources | nindent 12 }}
           livenessProbe:
             tcpSocket:
               port: {{ .Values.server.config.port }}

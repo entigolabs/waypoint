@@ -11,10 +11,24 @@ server:
     apiBaseUrl: "https://andmed.eesti.ee/api"
     logLevel: "info"
     logOutput: "stdout"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
 
 db:
   image: ghcr.io/entigolabs/waypoint-db
   tag: "" # defaults to Chart.AppVersion
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
 
 database:
   name: "waypoint"

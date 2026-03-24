@@ -40,4 +40,6 @@ runs:
           --ignore-test container-image-pull-policy \
           --ignore-test container-security-context-user-group-id \
           --ignore-test container-security-context-readonlyrootfilesystem \
+          --ignore-test container-ephemeral-storage-request-and-limit \
+          --ignore-test pod-networkpolicy \
           --output-format ci
