@@ -25,6 +25,13 @@ async function extractErrorInfo(err: unknown): Promise<{ message: string; code: 
         };
     }
 
+    if (err instanceof SyntaxError) {
+        return {
+            message: 'The API returned an unexpected response (not JSON). The API endpoint may not be configured correctly.',
+            code: undefined,
+        };
+    }
+
     let code: number | undefined;
     let message = err instanceof Error ? err.message : String(err);
 
@@ -37,11 +44,7 @@ async function extractErrorInfo(err: unknown): Promise<{ message: string; code: 
             typeof (response as { status: unknown }).status === 'number'
         ) {
             code = (response as { status: number }).status;
-            try {
-                message = await (response as Response).text();
-            } catch {
-                // fall back to the Error message
-            }
+            message = await (response as Response).text();
         }
     }
 
@@ -49,7 +52,7 @@ async function extractErrorInfo(err: unknown): Promise<{ message: string; code: 
 }
 
 const api = new DefaultApi(
-    new Configuration({ basePath: import.meta.env.VITE_API_ENDPOINT ?? undefined }),
+    new Configuration({ basePath: import.meta.env.VITE_API_ENDPOINT || undefined }),
 );
 
 const categoryColumns = [
@@ -141,7 +144,7 @@ export const EndpointView: React.FC = () => {
 
     if (state.status === 'error') {
         const message = state.errorCode !== undefined
-            ? `Failed to load data (${state.errorCode})`
+            ? `Failed to load data (${ state.errorCode })`
             : 'Failed to load data';
 
         return (

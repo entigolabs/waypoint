@@ -20,6 +20,7 @@ const renderFontSizeOption = (option: { label?: React.ReactNode; value?: string 
 
 const App: React.FC = () => {
     const [fontSize, setFontSize] = useState(14);
+    const apiUrl = import.meta.env.VITE_API_ENDPOINT || window.location.origin;
 
     return (
         <ConfigProvider theme={ { token: { fontSize, fontSizeSM: fontSize } } }>
@@ -29,9 +30,12 @@ const App: React.FC = () => {
                         <img src={ entigoLogo } className={ styles.logo } alt="Entigo" />
                     </div>
                     <Flex gap={ 16 } align="center">
-                        <Text type="secondary">
-                            { import.meta.env.VITE_API_ENDPOINT ?? '' }
-                        </Text>
+                        <Flex gap={ 8 } align="center">
+                            <Text>API URL:</Text>
+                            <Text type="secondary">
+                                { apiUrl }
+                            </Text>
+                        </Flex>
                         <Flex gap={ 8 } align="center">
                             <Text>Font size:</Text>
                             <Select
