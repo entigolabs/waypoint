@@ -9,3 +9,4 @@ data:
   DB_NAME: {{ .Values.database.name | required "database.name is required" | quote }}
   LOG_LEVEL: {{ .Values.server.config.logLevel | quote }}
   LOG_OUTPUT: {{ .Values.server.config.logOutput | quote }}
+  USER_AGENT: {{ .Values.server.config.userAgent | default (printf "waypoint/%s (github.com/entigolabs/waypoint)" .Chart.AppVersion) | quote }}

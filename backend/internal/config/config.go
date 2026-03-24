@@ -22,6 +22,7 @@ type Config struct {
 	ServerAddr     string    `mapstructure:"SERVER_ADDR" required:"false"`
 	AllowedOrigins []string  `mapstructure:"ALLOWED_ORIGINS" required:"true"`
 	APIBaseURL     string    `mapstructure:"API_BASE_URL" required:"true"`
+	UserAgent      string    `mapstructure:"USER_AGENT" required:"false"`
 	DBConfig       DBConfig  `mapstructure:",squash"`
 	LogConfig      LogConfig `mapstructure:",squash"`
 }

@@ -11,16 +11,18 @@ import (
 )
 
 type HttpClient struct {
-	client  *http.Client
-	retries int
+	client    *http.Client
+	retries   int
+	userAgent string
 }
 
-func NewHttpClient(timeout time.Duration, retries int) *HttpClient {
+func NewHttpClient(timeout time.Duration, retries int, userAgent string) *HttpClient {
 	return &HttpClient{
 		client: &http.Client{
 			Timeout: timeout,
 		},
-		retries: retries,
+		retries:   retries,
+		userAgent: userAgent,
 	}
 }
 
@@ -83,6 +85,12 @@ func (c *HttpClient) DoWithRetry(ctx context.Context, req *http.Request, body *b
 	var resp *http.Response
 	var err error
 	req = req.WithContext(ctx)
+	if c.userAgent != "" && req.Header.Get("User-Agent") == "" {
+		if req.Header == nil {
+			req.Header = make(http.Header)
+		}
+		req.Header.Set("User-Agent", c.userAgent)
+	}
 	if body != nil {
 		req.Body = io.NopCloser(body)
 	}

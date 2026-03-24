@@ -14,7 +14,7 @@ import (
 )
 
 func newApiClient(baseURL string) *client.ApiClient {
-	return client.NewApiClient(baseURL, client.NewHttpClient(5*time.Second, 1))
+	return client.NewApiClient(baseURL, client.NewHttpClient(5*time.Second, 1, ""))
 }
 
 func TestFetchCategories(t *testing.T) {

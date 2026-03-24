@@ -11,6 +11,7 @@ server:
     apiBaseUrl: "https://andmed.eesti.ee/api"
     logLevel: "info"
     logOutput: "stdout"
+    userAgent: ""
   resources:
     requests:
       cpu: 100m

@@ -65,7 +65,7 @@ func run(cfg config.Config) error {
 	}
 
 	database := db.NewDB(rawDB)
-	apiClient := client.NewApiClient(cfg.APIBaseURL, client.NewHttpClient(30*time.Second, 3))
+	apiClient := client.NewApiClient(cfg.APIBaseURL, client.NewHttpClient(30*time.Second, 3, cfg.UserAgent))
 
 	go collector.NewCollector(database, apiClient).Start(ctx)
 
