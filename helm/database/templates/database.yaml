@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}
 spec:
   name: {{ .Values.database | required "database is required" }}
-  owner: {{ .Release.Name }}_owner
+  owner: {{ .Release.Name | replace "-" "_" }}_owner
   encoding: "UTF8"
   lcCType: "et_EE.UTF-8"
   lcCollate: "et_EE.UTF-8"

@@ -3,7 +3,7 @@ kind: PostgreSQLInstance
 metadata:
   name: {{ .Release.Name }}
 spec:
-  allocatedStorage: 1
+  allocatedStorage: 20
   engineVersion: "18.3"
   instanceType: {{ .Values.instanceType }}
   allowMajorVersionUpgrade: false

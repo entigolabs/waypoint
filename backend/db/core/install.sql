@@ -24,6 +24,13 @@ begin
     execute format('alter default privileges for role current_user in schema %s grant %s to group %s', schema_name, permissions, role);
 end;
 $$ language plpgsql;
+
+create or replace procedure sys.grant_permissions_to_role(permissions text, schema_table text, role text) as
+$$
+begin
+    execute format('grant %s on %s to %s', permissions, schema_table, role);
+end;
+$$ language plpgsql;
 ------------------
 -- CREATE ROLES --
 ------------------

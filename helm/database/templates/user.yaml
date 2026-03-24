@@ -3,7 +3,7 @@ kind: PostgreSQLUser
 metadata:
   name: {{ .Release.Name }}-owner
 spec:
-  name: {{ .Release.Name }}_owner
+  name: {{ .Release.Name | replace "-" "_" }}_owner
   instanceRef:
     name: {{ .Release.Name }}
   createDb: false
@@ -21,11 +21,11 @@ spec:
     name: {{ .Release.Name }}
   login: true
   createDb: false
-  createRole: false
+  createRole: true
   inherit: true
   grant:
     roles:
-      - {{ .Release.Name }}_owner
+      - {{ .Release.Name | replace "-" "_" }}_owner
 ---
 apiVersion: database.entigo.com/v1alpha1
 kind: PostgreSQLUser
