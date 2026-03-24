@@ -45,7 +45,7 @@ const App: React.FC = () => {
                                 onChange={ setFontSize }
                                 optionRender={ renderFontSizeOption }
                                 labelRender={ renderFontSizeOption }
-                                style={ { width: 130 } } />
+                                style={ { width: 150 } } />
                         </Flex>
                     </Flex>
                 </Header>
