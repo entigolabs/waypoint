@@ -1,0 +1,54 @@
+-----------------------
+-- CONFIGURE SCHEMAS --
+-----------------------
+create schema if not exists sys;
+grant usage on schema sys to public;
+create schema if not exists core;
+grant usage on schema core to public;
+----------------------
+-- HELPER FUNCTIONS --
+----------------------
+create or replace procedure pg_temp.create_role(name text) as
+$$
+begin
+    execute format('create role %s with nologin', name);
+exception
+    when duplicate_object then null;
+    when others then raise;
+end;
+$$ language plpgsql;
+
+create or replace procedure pg_temp.grant_schema_permissions_to_role(schema_name text, permissions text, role text) as
+$$
+begin
+    execute format('alter default privileges for role current_user in schema %s grant %s to group %s', schema_name, permissions, role);
+end;
+$$ language plpgsql;
+------------------
+-- CREATE ROLES --
+------------------
+call pg_temp.create_role('{{.sysRWRole}}');
+call pg_temp.create_role('{{.sysRRole}}');
+call pg_temp.create_role('{{.coreRWRole}}');
+call pg_temp.create_role('{{.coreRRole}}');
+----------------
+-- PRIVILEGES --
+----------------
+call pg_temp.grant_schema_permissions_to_role('sys', 'select, insert, update on tables', '{{.sysRWRole}}');
+call pg_temp.grant_schema_permissions_to_role('sys', 'usage on sequences', '{{.sysRWRole}}');
+call pg_temp.grant_schema_permissions_to_role('sys', 'select on tables', '{{.sysRRole}}');
+call pg_temp.grant_schema_permissions_to_role('core', 'select, insert, update on tables', '{{.coreRWRole}}');
+call pg_temp.grant_schema_permissions_to_role('core', 'usage on sequences', '{{.coreRWRole}}');
+call pg_temp.grant_schema_permissions_to_role('core', 'select on tables', '{{.coreRRole}}');
+---------------------------
+-- CONFIGURE SEARCH PATH --
+---------------------------
+do
+$$
+    declare
+        current_database_name text;
+    begin
+        select current_database from current_database() into current_database_name;
+        execute format('alter database %s set search_path to sys', current_database_name);
+    end;
+$$ language plpgsql;

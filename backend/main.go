@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
@@ -26,37 +27,39 @@ import (
 )
 
 func main() {
-	if err := run(); err != nil {
+	cfg, err := config.LoadConfig(".")
+	if err != nil {
 		log.Fatal(err)
+	}
+
+	logger, closeLogger, err := config.NewLogger(cfg.LogConfig)
+	if err != nil {
+		log.Fatal(err)
+	}
+	slog.SetDefault(logger)
+
+	runErr := run(cfg)
+	if runErr != nil {
+		slog.Error("fatal error", "error", runErr)
+	}
+	_ = closeLogger(context.Background())
+	if runErr != nil {
+		os.Exit(1)
 	}
 }
 
-func run() error {
+func run(cfg config.Config) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	time.Local = time.UTC
 
-	cfg, err := config.LoadConfig(".")
-	if err != nil {
-		return err
-	}
-	logger, closeLogger, err := config.NewLogger(cfg.LogConfig)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if closeLogger != nil {
-			_ = closeLogger(ctx)
-		}
-	}()
-	slog.SetDefault(logger)
 	version.PrintVersion()
 	slog.Debug("Debug enabled")
 
 	terminated := make(chan os.Signal, 1)
 	signal.Notify(terminated, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-	rawDB, err := kpgx.New(ctx, cfg.DBURI, ksql.Config{})
+	rawDB, err := kpgx.New(ctx, getDBUri(cfg.DBConfig), ksql.Config{})
 	if err != nil {
 		return err
 	}
@@ -86,6 +89,10 @@ func run() error {
 	return shutdown(srv, rawDB)
 }
 
+func getDBUri(cfg config.DBConfig) string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Name)
+}
+
 func newRouter(database *db.DB, cfg config.Config) http.Handler {
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins: cfg.AllowedOrigins,
@@ -103,8 +110,8 @@ func newRouter(database *db.DB, cfg config.Config) http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.LoggingMiddleware)
 	r.Use(middleware.RecovererMiddleware)
-	r.Get("/health", server.NewHealthHandler(database))
-	r.Handle("/metrics", promhttp.Handler())
+	r.Get(config.HealthCheckPath, server.NewHealthHandler(database))
+	r.Handle(config.MetricsPath, promhttp.Handler())
 	r.Mount("/api", publicRouter)
 	return r
 }

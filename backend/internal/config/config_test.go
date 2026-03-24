@@ -7,22 +7,35 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func setDBEnv(t *testing.T) {
+	t.Helper()
+	t.Setenv("DB_USER", "user")
+	t.Setenv("DB_PASSWORD", "pass")
+	t.Setenv("DB_HOST", "localhost")
+	t.Setenv("DB_PORT", "5432")
+	t.Setenv("DB_NAME", "db")
+}
+
 func TestLoadConfig_FromEnv(t *testing.T) {
-	t.Setenv("DB_URI", "postgres://user:pass@localhost/db")
+	setDBEnv(t)
 	t.Setenv("API_BASE_URL", "https://api.example.com")
 	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080")
 	t.Setenv("SERVER_ADDR", ":9090")
 
 	cfg, err := LoadConfig(t.TempDir())
 	require.NoError(t, err)
-	assert.Equal(t, "postgres://user:pass@localhost/db", cfg.DBURI)
+	assert.Equal(t, "user", cfg.DBConfig.User)
+	assert.Equal(t, "pass", cfg.DBConfig.Password)
+	assert.Equal(t, "localhost", cfg.DBConfig.Host)
+	assert.Equal(t, 5432, cfg.DBConfig.Port)
+	assert.Equal(t, "db", cfg.DBConfig.Name)
 	assert.Equal(t, "https://api.example.com", cfg.APIBaseURL)
 	assert.Equal(t, []string{"http://localhost:3000", "http://localhost:8080"}, cfg.AllowedOrigins)
 	assert.Equal(t, ":9090", cfg.ServerAddr)
 }
 
 func TestLoadConfig_DefaultServerAddr(t *testing.T) {
-	t.Setenv("DB_URI", "postgres://user:pass@localhost/db")
+	setDBEnv(t)
 	t.Setenv("API_BASE_URL", "https://api.example.com")
 	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000")
 	t.Setenv("SERVER_ADDR", "")
@@ -32,52 +45,36 @@ func TestLoadConfig_DefaultServerAddr(t *testing.T) {
 	assert.Equal(t, ":8081", cfg.ServerAddr)
 }
 
-func TestLoadConfig_MissingDBURI(t *testing.T) {
-	t.Setenv("DB_URI", "")
+func TestLoadConfig_MissingDBUser(t *testing.T) {
+	t.Setenv("DB_USER", "")
+	t.Setenv("DB_PASSWORD", "pass")
+	t.Setenv("DB_HOST", "localhost")
+	t.Setenv("DB_PORT", "5432")
+	t.Setenv("DB_NAME", "db")
 	t.Setenv("API_BASE_URL", "https://api.example.com")
 	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000")
-	t.Setenv("SERVER_ADDR", "")
 
 	_, err := LoadConfig(t.TempDir())
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "DB_URI")
+	assert.Contains(t, err.Error(), "DB_USER")
 }
 
-func TestLoadConfig_InvalidDBURI_WrongScheme(t *testing.T) {
-	t.Setenv("DB_URI", "mysql://user:pass@localhost:3306/db")
+func TestLoadConfig_InvalidDBPort(t *testing.T) {
+	t.Setenv("DB_USER", "user")
+	t.Setenv("DB_PASSWORD", "pass")
+	t.Setenv("DB_HOST", "localhost")
+	t.Setenv("DB_PORT", "99999")
+	t.Setenv("DB_NAME", "db")
 	t.Setenv("API_BASE_URL", "https://api.example.com")
 	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000")
-	t.Setenv("SERVER_ADDR", "")
 
 	_, err := LoadConfig(t.TempDir())
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "scheme")
-}
-
-func TestLoadConfig_InvalidDBURI_MissingPassword(t *testing.T) {
-	t.Setenv("DB_URI", "postgres://user@localhost:5432/db")
-	t.Setenv("API_BASE_URL", "https://api.example.com")
-	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000")
-	t.Setenv("SERVER_ADDR", "")
-
-	_, err := LoadConfig(t.TempDir())
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "password")
-}
-
-func TestLoadConfig_InvalidDBURI_MissingDatabase(t *testing.T) {
-	t.Setenv("DB_URI", "postgres://user:pass@localhost:5432")
-	t.Setenv("API_BASE_URL", "https://api.example.com")
-	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000")
-	t.Setenv("SERVER_ADDR", "")
-
-	_, err := LoadConfig(t.TempDir())
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "database")
+	assert.Contains(t, err.Error(), "DB_PORT")
 }
 
 func TestLoadConfig_MissingAPIBaseURL(t *testing.T) {
-	t.Setenv("DB_URI", "postgres://user:pass@localhost/db")
+	setDBEnv(t)
 	t.Setenv("API_BASE_URL", "")
 	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000")
 	t.Setenv("SERVER_ADDR", "")
@@ -88,7 +85,7 @@ func TestLoadConfig_MissingAPIBaseURL(t *testing.T) {
 }
 
 func TestLoadConfig_DefaultLogSettings(t *testing.T) {
-	t.Setenv("DB_URI", "postgres://user:pass@localhost/db")
+	setDBEnv(t)
 	t.Setenv("API_BASE_URL", "https://api.example.com")
 	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000")
 
@@ -99,7 +96,7 @@ func TestLoadConfig_DefaultLogSettings(t *testing.T) {
 }
 
 func TestLoadConfig_InvalidLogLevel(t *testing.T) {
-	t.Setenv("DB_URI", "postgres://user:pass@localhost/db")
+	setDBEnv(t)
 	t.Setenv("API_BASE_URL", "https://api.example.com")
 	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000")
 	t.Setenv("LOG_LEVEL", "verbose")
@@ -110,7 +107,7 @@ func TestLoadConfig_InvalidLogLevel(t *testing.T) {
 }
 
 func TestLoadConfig_InvalidLogOutput(t *testing.T) {
-	t.Setenv("DB_URI", "postgres://user:pass@localhost/db")
+	setDBEnv(t)
 	t.Setenv("API_BASE_URL", "https://api.example.com")
 	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000")
 	t.Setenv("LOG_OUTPUT", "syslog")

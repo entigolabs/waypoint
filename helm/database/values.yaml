@@ -1,0 +1,4 @@
+instanceType: "db.t3.micro"
+database: "waypoint"
+dbUser: ""
+apiUser: ""

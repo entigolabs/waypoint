@@ -1,0 +1,43 @@
+name: Lint Helm chart
+description: Runs helm lint, template and kube-score on a chart
+
+inputs:
+  chart-path:
+    description: Path to the Helm chart
+    required: true
+  set-args:
+    description: Additional --set arguments passed to helm lint and helm template
+    required: false
+    default: ""
+  token:
+    description: GitHub token for Helm setup
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: azure/setup-helm@v4
+      with:
+        token: ${{ inputs.token }}
+    - name: Helm Lint
+      shell: bash
+      run: helm lint ${{ inputs.chart-path }} ${{ inputs.set-args }}
+    - name: Helm Template
+      shell: bash
+      run: |
+        mkdir -p out
+        helm template test-release ${{ inputs.chart-path }} ${{ inputs.set-args }} > out/manifest.yaml
+    - name: Install kube-score
+      shell: bash
+      run: |
+        wget https://github.com/zegl/kube-score/releases/download/v1.20.0/kube-score_1.20.0_linux_amd64 -O kube-score
+        chmod +x kube-score
+        sudo mv kube-score /usr/local/bin/
+    - name: Run kube-score
+      shell: bash
+      run: |
+        kube-score score out/manifest.yaml \
+          --ignore-test container-image-pull-policy \
+          --ignore-test container-security-context-user-group-id \
+          --ignore-test container-security-context-readonlyrootfilesystem \
+          --output-format ci

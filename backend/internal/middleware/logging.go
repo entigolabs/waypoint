@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"runtime/debug"
 	"time"
+
+	"github.com/entigolabs/waypoint/internal/config"
 )
 
 type LoggingResponseWriter struct {
@@ -35,6 +37,10 @@ func RecovererMiddleware(next http.Handler) http.Handler {
 
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		logger := slog.InfoContext
+		if r.URL.Path == config.HealthCheckPath || r.URL.Path == config.MetricsPath {
+			logger = slog.DebugContext
+		}
 		start := time.Now()
 		lrw := &LoggingResponseWriter{ResponseWriter: w, StatusCode: http.StatusOK}
 		defer func() {
@@ -48,7 +54,7 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 			if lrw.ErrorMessage != "" {
 				attrs = append(attrs, "error", lrw.ErrorMessage)
 			}
-			slog.InfoContext(r.Context(), "", attrs...)
+			logger(r.Context(), "", attrs...)
 		}()
 		next.ServeHTTP(lrw, r)
 	})

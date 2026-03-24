@@ -2,13 +2,18 @@ package config
 
 import (
 	"fmt"
-	"net/url"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
+)
+
+const (
+	HealthCheckPath = "/health"
+	MetricsPath     = "/metrics"
 )
 
 // Config stores all configuration of the application.
@@ -16,9 +21,17 @@ import (
 type Config struct {
 	ServerAddr     string    `mapstructure:"SERVER_ADDR" required:"false"`
 	AllowedOrigins []string  `mapstructure:"ALLOWED_ORIGINS" required:"true"`
-	DBURI          string    `mapstructure:"DB_URI" required:"true"`
 	APIBaseURL     string    `mapstructure:"API_BASE_URL" required:"true"`
+	DBConfig       DBConfig  `mapstructure:",squash"`
 	LogConfig      LogConfig `mapstructure:",squash"`
+}
+
+type DBConfig struct {
+	User     string `mapstructure:"DB_USER" required:"true"`
+	Password string `mapstructure:"DB_PASSWORD" required:"true"`
+	Host     string `mapstructure:"DB_HOST" required:"true"`
+	Port     int    `mapstructure:"DB_PORT" required:"true"`
+	Name     string `mapstructure:"DB_NAME" required:"true"`
 }
 
 type LogConfig struct {
@@ -67,6 +80,7 @@ func LoadConfig(path string) (config Config, err error) {
 	decoderConfig := &mapstructure.DecoderConfig{
 		DecodeHook: mapstructure.ComposeDecodeHookFunc(
 			mapstructure.StringToSliceHookFunc(","),
+			StringToIntHookFunc(),
 		),
 		Result: &config,
 	}
@@ -87,6 +101,15 @@ func LoadConfig(path string) (config Config, err error) {
 		return config, fmt.Errorf("config validation failed: %w", err)
 	}
 	return config, nil
+}
+
+func StringToIntHookFunc() mapstructure.DecodeHookFunc {
+	return func(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
+		if f.Kind() != reflect.String || t.Kind() != reflect.Int {
+			return data, nil
+		}
+		return strconv.Atoi(data.(string))
+	}
 }
 
 func overrideConfig(v *viper.Viper, c interface{}) {
@@ -144,8 +167,6 @@ func validateField(fieldName string, value interface{}) error {
 	switch fieldName {
 	case "APIBaseURL":
 		return validateHTTPURL(fieldName, value.(string))
-	case "DBURI":
-		return validateDBURI(value.(string))
 	case "LogOutput":
 		switch value.(LogOutput) {
 		case LogOutputFile, LogOutputStdout:
@@ -158,29 +179,14 @@ func validateField(fieldName string, value interface{}) error {
 		default:
 			return fmt.Errorf("LOG_LEVEL must be one of: %s, %s, %s, %s", LogLevelDebug, LogLevelInfo, LogLevelWarn, LogLevelError)
 		}
-	}
-	return nil
-}
-
-func validateDBURI(value string) error {
-	u, err := url.Parse(value)
-	if err != nil {
-		return fmt.Errorf("DB_URI is not a valid URL: %w", err)
-	}
-	if u.Scheme != "postgres" && u.Scheme != "postgresql" {
-		return fmt.Errorf("DB_URI scheme must be postgres:// or postgresql://")
-	}
-	if u.User == nil {
-		return fmt.Errorf("DB_URI must include a username")
-	}
-	if _, ok := u.User.Password(); !ok {
-		return fmt.Errorf("DB_URI must include a password")
-	}
-	if u.Host == "" {
-		return fmt.Errorf("DB_URI must include a host")
-	}
-	if u.Path == "" || u.Path == "/" {
-		return fmt.Errorf("DB_URI must include a database name")
+	case "Port":
+		port, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("DB_PORT must be an integer")
+		}
+		if port < 0 || port > 65535 {
+			return fmt.Errorf("DB_PORT must be between 0 and 65535")
+		}
 	}
 	return nil
 }

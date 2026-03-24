@@ -1,0 +1,44 @@
+apiVersion: database.entigo.com/v1alpha1
+kind: PostgreSQLUser
+metadata:
+  name: {{ .Release.Name }}-owner
+spec:
+  name: {{ .Release.Name }}_owner
+  instanceRef:
+    name: {{ .Release.Name }}
+  createDb: false
+  createRole: false
+  inherit: true
+  login: false
+---
+apiVersion: database.entigo.com/v1alpha1
+kind: PostgreSQLUser
+metadata:
+  name: {{ .Release.Name }}-user
+spec:
+  name: {{ .Values.dbUser | required "dbUser is required" }}
+  instanceRef:
+    name: {{ .Release.Name }}
+  login: true
+  createDb: false
+  createRole: false
+  inherit: true
+  grant:
+    roles:
+      - {{ .Release.Name }}_owner
+---
+apiVersion: database.entigo.com/v1alpha1
+kind: PostgreSQLUser
+metadata:
+  name: {{ .Release.Name }}-api-user
+spec:
+  name: {{ .Values.apiUser | required "apiUser is required" }}
+  instanceRef:
+    name: {{ .Release.Name }}
+  login: true
+  createDb: false
+  createRole: false
+  inherit: true
+  grant:
+    roles:
+      - core_rw

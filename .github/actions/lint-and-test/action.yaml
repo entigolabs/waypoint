@@ -6,14 +6,16 @@ runs:
   steps:
     - uses: actions/setup-go@v5
       with:
-        go-version-file: go.mod
+        go-version-file: backend/go.mod
     - uses: golangci/golangci-lint-action@v9
       with:
         version: latest
+        working-directory: backend
     - run: make test-ci
       shell: bash
+      working-directory: backend
     - uses: actions/upload-artifact@v7
       if: always()
       with:
         name: test-results
-        path: build/
+        path: backend/build/

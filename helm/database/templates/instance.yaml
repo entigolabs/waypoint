@@ -1,0 +1,12 @@
+apiVersion: database.entigo.com/v1alpha1
+kind: PostgreSQLInstance
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  allocatedStorage: 1
+  engineVersion: "18.3"
+  instanceType: {{ .Values.instanceType }}
+  allowMajorVersionUpgrade: false
+  autoMinorVersionUpgrade: true
+  deletionProtection: true
+  multiAZ: false

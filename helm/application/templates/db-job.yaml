@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-db
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  activeDeadlineSeconds: 600
+  parallelism: 1
+  completions: 1
+  backoffLimit: 10
+  template:
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-db
+          image: "{{ .Values.db.image }}:{{ .Values.db.tag | default .Chart.AppVersion }}"
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-db
+            - secretRef:
+                name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-user
+          volumeMounts:
+            - name: tern-config-volume
+              mountPath: /tern
+      volumes:
+        - name: tern-config-volume
+          configMap:
+            name: {{ .Release.Name }}-db-tern
+      restartPolicy: Never

@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.server.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      initContainers:
+        - name: {{ .Release.Name }}-init
+          image: "{{ .Values.db.image }}:{{ .Values.db.tag | default .Chart.AppVersion }}"
+          args: [ "validate" ]
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-db
+            - secretRef:
+                name: {{ .Release.Name }}-db
+          volumeMounts:
+            - name: tern-config-volume
+              mountPath: /tern
+      containers:
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.server.image }}:{{ .Values.server.tag | default .Chart.AppVersion }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.server.config.port }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-api-user
+                  key: endpoint
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-api-user
+                  key: password
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-api-user
+                  key: port
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-api-user
+                  key: username
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.server.config.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.server.config.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: tern-config-volume
+          configMap:
+            name: {{ .Release.Name }}-db-tern

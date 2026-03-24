@@ -1,0 +1,65 @@
+name: Database
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - helm/database/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - helm/database/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  CHART_PATH: helm/database
+  CHART_NAME: waypoint-db
+
+jobs:
+  lint-and-test:
+    name: Lint and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: azure/setup-helm@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Helm Lint
+        run: helm lint ${{ env.CHART_PATH }} --set dbUser=test --set apiUser=test
+      - name: Helm Template
+        run: helm template test-release ${{ env.CHART_PATH }} --set dbUser=test --set apiUser=test
+
+  release-helm:
+    name: Release DB Helm Chart
+    needs: lint-and-test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Calculate version
+        id: version
+        run: |
+          CURRENT_VERSION=$(grep '^version:' ${{ env.CHART_PATH }}/Chart.yaml | awk '{print $2}')
+          MAJOR_MINOR=$(echo $CURRENT_VERSION | cut -d. -f1,2)
+          NEW_VERSION="${MAJOR_MINOR}.${{ github.run_number }}"
+          echo "BUILD_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+      - uses: azure/setup-helm@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
+      - name: Update chart version
+        run: |
+          yq -i ".version = \"${{ env.BUILD_VERSION }}\"" ${{ env.CHART_PATH }}/Chart.yaml
+          yq -i ".appVersion = \"${{ env.BUILD_VERSION }}\"" ${{ env.CHART_PATH }}/Chart.yaml
+      - name: Package Helm chart
+        run: helm package ${{ env.CHART_PATH }}
+      - name: Push Helm chart to GHCR
+        run: helm push ${{ env.CHART_NAME }}-${{ env.BUILD_VERSION }}.tgz oci://${{ env.REGISTRY }}/${{ github.repository_owner }}
