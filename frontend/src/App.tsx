@@ -2,6 +2,7 @@ import { ConfigProvider, Flex, Layout, Select, Typography, Image } from 'antd';
 import React, { useState } from 'react';
 import entigoLogo from './assets/entigo.svg';
 import { DashboardView } from './components/DashboardView';
+import { NotFoundView } from './components/NotFoundView';
 import styles from './App.module.scss';
 
 const { Header, Content } = Layout;
@@ -21,14 +22,15 @@ const renderFontSizeOption = (option: { label?: React.ReactNode; value?: string 
 const App: React.FC = () => {
     const [fontSize, setFontSize] = useState(14);
     const apiUrl = import.meta.env.VITE_API_ENDPOINT || window.location.origin;
+    const isIndexPage = window.location.pathname === '/';
 
     return (
         <ConfigProvider theme={ { token: { fontSize, fontSizeSM: fontSize } } }>
             <Layout className={ styles.layout }>
                 <Header className={ styles.header }>
-                    <div className={ styles.logoArea }>
+                    <a href="/" className={ styles.logoArea }>
                         <Image src={ entigoLogo } className={ styles.logo } alt="Entigo" preview={ false } />
-                    </div>
+                    </a>
                     <Flex gap={ 16 } align="center">
                         <Flex gap={ 8 } align="center">
                             <Text>API URL:</Text>
@@ -50,7 +52,7 @@ const App: React.FC = () => {
                     </Flex>
                 </Header>
                 <Content className={ styles.content }>
-                    <DashboardView />
+                    { isIndexPage ? <DashboardView /> : <NotFoundView /> }
                 </Content>
             </Layout>
         </ConfigProvider>

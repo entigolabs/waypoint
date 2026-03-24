@@ -1,5 +1,8 @@
+import { cleanup } from '@testing-library/react';
 import { toHaveNoViolations } from 'jest-axe';
-import { expect } from 'vitest';
+import { afterEach, expect } from 'vitest';
+
+afterEach(cleanup);
 
 expect.extend(toHaveNoViolations);
 
