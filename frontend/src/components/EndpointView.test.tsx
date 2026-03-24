@@ -3,15 +3,10 @@ import { axe } from 'jest-axe';
 import { expect, test, vi } from 'vitest';
 import { EndpointView } from './EndpointView';
 
-vi.mock('@entigolabs/waypoint-api', () => ({
-    Configuration: vi.fn(),
-    DefaultApi: vi.fn(function() {
-        return {
-            getCoreCategories: vi.fn().mockResolvedValue({ data: [] }),
-            getCoreEmsCategories: vi.fn().mockResolvedValue({ data: [] }),
-            getCoreEmsThemes: vi.fn().mockResolvedValue({ data: [] }),
-        };
-    }),
+vi.mock('../client', () => ({
+    getCoreCategories: vi.fn().mockResolvedValue({ data: { data: [], metadata: { total: 0 } }, error: undefined }),
+    getCoreEmsCategories: vi.fn().mockResolvedValue({ data: { data: [], metadata: { total: 0 } }, error: undefined }),
+    getCoreEmsThemes: vi.fn().mockResolvedValue({ data: { data: [], metadata: { total: 0 } }, error: undefined }),
 }));
 
 test('EndpointView loading state has no accessibility violations', async () => {

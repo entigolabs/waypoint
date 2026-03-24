@@ -1,6 +1,6 @@
 import { Alert, Card, Flex, Spin, Table, Tag, Typography } from 'antd';
-import { Configuration, DefaultApi } from '@entigolabs/waypoint-api';
-import type { Category, EmsCategory, EmsTheme } from '@entigolabs/waypoint-api';
+import { getCoreCategories, getCoreEmsCategories, getCoreEmsThemes, Category, EmsCategory, EmsTheme } from '../client';
+import { client } from '../client/client.gen';
 import React, { useEffect, useState } from 'react';
 import styles from './EndpointView.module.scss';
 
@@ -17,43 +17,19 @@ interface State {
     errorCode: number | undefined;
 }
 
-async function extractErrorInfo(err: unknown): Promise<{ message: string; code: number | undefined }> {
-    if (err != null && typeof err === 'object' && (err as { name?: unknown }).name === 'FetchError') {
+function extractErrorInfo(error: unknown, response: Response | undefined): { message: string; code: number | undefined } {
+    if (!response) {
         return {
             message: 'The request failed. The server response could not be read — this is likely caused by a CORS restriction on the API endpoint. Check the browser console for details.',
             code: undefined,
         };
     }
-
-    if (err instanceof SyntaxError) {
-        return {
-            message: 'The API returned an unexpected response (not JSON). The API endpoint may not be configured correctly.',
-            code: undefined,
-        };
-    }
-
-    let code: number | undefined;
-    let message = err instanceof Error ? err.message : String(err);
-
-    if (err != null && typeof err === 'object') {
-        const response = (err as Record<string, unknown>).response;
-        if (
-            response != null &&
-            typeof response === 'object' &&
-            'status' in response &&
-            typeof (response as { status: unknown }).status === 'number'
-        ) {
-            code = (response as { status: number }).status;
-            message = await (response as Response).text();
-        }
-    }
-
+    const code = response.status;
+    const message = typeof error === 'string' ? error : error instanceof Error ? error.message : String(error);
     return { message, code };
 }
 
-const api = new DefaultApi(
-    new Configuration({ basePath: import.meta.env.VITE_API_ENDPOINT || undefined }),
-);
+client.setConfig({ baseUrl: import.meta.env.VITE_API_ENDPOINT || '' });
 
 const categoryColumns = [
     { title: 'ID', dataIndex: 'id', key: 'id' },
@@ -109,27 +85,38 @@ export const EndpointView: React.FC = () => {
 
     useEffect(() => {
         Promise.all([
-            api.getCoreCategories(),
-            api.getCoreEmsCategories(),
-            api.getCoreEmsThemes(),
+            getCoreCategories(),
+            getCoreEmsCategories(),
+            getCoreEmsThemes(),
         ])
             .then(([cats, emsCats, emsThemes]) => {
+                const err = cats.error ?? emsCats.error ?? emsThemes.error;
+                if (err) {
+                    const response = (cats.response ?? emsCats.response ?? emsThemes.response) as Response | undefined;
+                    const { message, code } = extractErrorInfo(err, response);
+                    setState((prev) => ({
+                        ...prev,
+                        status: 'error',
+                        error: message,
+                        errorCode: code,
+                    }));
+                    return;
+                }
                 setState({
-                    categories: cats.data,
-                    emsCategories: emsCats.data,
-                    emsThemes: emsThemes.data,
+                    categories: cats.data!.data,
+                    emsCategories: emsCats.data!.data,
+                    emsThemes: emsThemes.data!.data,
                     status: 'success',
                     error: '',
                     errorCode: undefined,
                 });
             })
-            .catch(async (err: unknown) => {
-                const { message, code } = await extractErrorInfo(err);
+            .catch((err: unknown) => {
                 setState((prev) => ({
                     ...prev,
                     status: 'error',
-                    error: message,
-                    errorCode: code,
+                    error: String(err),
+                    errorCode: undefined,
                 }));
             });
     }, []);
