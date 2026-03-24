@@ -1,37 +1,18 @@
-import { Card, Table, Typography } from 'antd';
-import { EmsCategory } from '../client';
-import React, { useState } from 'react';
-import styles from './DashboardView.module.scss';
+import { EmsCategory, getCoreEmsCategories } from '../client';
+import React from 'react';
+import { DataTable } from './DataTable';
 
-const { Title } = Typography;
-
-const emsCategoryColumns = [
+const columns = [
     { title: 'ID', dataIndex: 'id', key: 'id' },
     { title: 'Name', dataIndex: 'name', key: 'name' },
 ];
 
-type Props = {
-    emsCategories: EmsCategory[];
-};
-
-export const EmsCategoryTable: React.FC<Props> = ({ emsCategories }) => {
-    const [pageSize, setPageSize] = useState(20);
-
-    return (
-        <>
-            <Title level={ 4 } style={ { marginBottom: 20 } }>
-                EMS Categories
-            </Title>
-            <Card className={ styles.card }>
-                <Table
-                    dataSource={ emsCategories }
-                    columns={ emsCategoryColumns }
-                    rowKey="id"
-                    size="small"
-                    pagination={ { pageSize, showSizeChanger: true, onShowSizeChange: (_, size) => setPageSize(size) } }
-                    scroll={ { x: 'max-content' } }
-                />
-            </Card>
-        </>
-    );
-};
+export const EmsCategoryTable: React.FC = () => (
+    <DataTable<EmsCategory>
+        title="EMS Categories"
+        columns={ columns }
+        rowKey="id"
+        fetchData={ getCoreEmsCategories }
+        errorMessage="Failed to load EMS categories"
+    />
+);

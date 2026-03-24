@@ -1,11 +1,9 @@
-import { Card, Table, Tag, Typography } from 'antd';
-import { EmsTheme } from '../client';
-import React, { useState } from 'react';
-import styles from './DashboardView.module.scss';
+import { Tag } from 'antd';
+import { EmsTheme, getCoreEmsThemes } from '../client';
+import React from 'react';
+import { DataTable } from './DataTable';
 
-const { Title } = Typography;
-
-const emsThemeColumns = [
+const columns = [
     { title: 'Code', dataIndex: 'code', key: 'code' },
     { title: 'Datasets Count', dataIndex: 'datasetsCount', key: 'datasetsCount' },
     {
@@ -26,28 +24,12 @@ const emsThemeColumns = [
     },
 ];
 
-type Props = {
-    emsThemes: EmsTheme[];
-};
-
-export const EmsThemeTable: React.FC<Props> = ({ emsThemes }) => {
-    const [pageSize, setPageSize] = useState(20);
-
-    return (
-        <>
-            <Title level={ 4 } style={ { marginBottom: 20 } }>
-                EMS Themes
-            </Title>
-            <Card className={ styles.card }>
-                <Table
-                    dataSource={ emsThemes }
-                    columns={ emsThemeColumns }
-                    rowKey="code"
-                    size="small"
-                    pagination={ { pageSize, showSizeChanger: true, onShowSizeChange: (_, size) => setPageSize(size) } }
-                    scroll={ { x: 'max-content' } }
-                />
-            </Card>
-        </>
-    );
-};
+export const EmsThemeTable: React.FC = () => (
+    <DataTable<EmsTheme>
+        title="EMS Themes"
+        columns={ columns }
+        rowKey="code"
+        fetchData={ getCoreEmsThemes }
+        errorMessage="Failed to load EMS themes"
+    />
+);

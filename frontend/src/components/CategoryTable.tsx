@@ -1,11 +1,9 @@
-import { Card, Table, Tag, Typography } from 'antd';
-import { Category } from '../client';
-import React, { useState } from 'react';
-import styles from './DashboardView.module.scss';
+import { Tag } from 'antd';
+import { Category, getCoreCategories } from '../client';
+import React from 'react';
+import { DataTable } from './DataTable';
 
-const { Title } = Typography;
-
-const categoryColumns = [
+const columns = [
     { title: 'ID', dataIndex: 'id', key: 'id' },
     { title: 'Name', dataIndex: 'name', key: 'name' },
     { title: 'Description', dataIndex: 'description', key: 'description' },
@@ -18,28 +16,12 @@ const categoryColumns = [
     },
 ];
 
-type Props = {
-    categories: Category[];
-};
-
-export const CategoryTable: React.FC<Props> = ({ categories }) => {
-    const [pageSize, setPageSize] = useState(20);
-
-    return (
-        <>
-            <Title level={ 4 } style={ { marginBottom: 20 } }>
-                Categories
-            </Title>
-            <Card className={ styles.card }>
-                <Table
-                    dataSource={ categories }
-                    columns={ categoryColumns }
-                    rowKey="id"
-                    size="small"
-                    pagination={ { pageSize, showSizeChanger: true, onShowSizeChange: (_, size) => setPageSize(size) } }
-                    scroll={ { x: 'max-content' } }
-                />
-            </Card>
-        </>
-    );
-};
+export const CategoryTable: React.FC = () => (
+    <DataTable<Category>
+        title="Categories"
+        columns={ columns }
+        rowKey="id"
+        fetchData={ getCoreCategories }
+        errorMessage="Failed to load categories"
+    />
+);

@@ -30,8 +30,6 @@ npm install
 | `VITE_API_ENDPOINT` | Base URL of the Waypoint API | Same origin as the frontend |
 | `VITE_APP_NAME` | Display name shown in the header | `Entigo Portal minimal` |
 
-Leave `VITE_API_ENDPOINT` empty to have the frontend call the API at the same origin (useful when served behind a reverse proxy).
-
 ## Development
 For development, with hot reload:
 
