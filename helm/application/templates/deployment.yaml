@@ -22,7 +22,7 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-db
             - secretRef:
-                name: {{ .Release.Name }}-db
+                name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-user
           resources: {{ toYaml .Values.db.resources | nindent 12 }}
           volumeMounts:
             - name: tern-config-volume
