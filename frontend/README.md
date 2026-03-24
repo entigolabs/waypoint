@@ -2,7 +2,15 @@
 
 A React dashboard for browsing Waypoint API data, built with Vite and Ant Design.
 
-## Prerequisites
+* [Requirements](#requirements)
+* [Setup](#setup)
+* [Environment variables](#environment-variables)
+* [Development](#development)
+* [Build](#build)
+* [Testing](#testing)
+* [Code generation](#code-generation)
+
+## Requirements
 
 - Node.js
 - npm
@@ -25,9 +33,10 @@ npm install
 Leave `VITE_API_ENDPOINT` empty to have the frontend call the API at the same origin (useful when served behind a reverse proxy).
 
 ## Development
-For development, with hot reload:
+To install dependencies and start the development server with hot reload:
 
 ```bash
+npm install
 npm run dev
 ```
 
@@ -46,7 +55,7 @@ To serve the build locally for preview:
 npm run serve
 ```
 
-## Tests
+## Testing
 To test the frontend for accessibility and other issues:
 
 ```bash
