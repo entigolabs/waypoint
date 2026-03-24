@@ -27,4 +27,3 @@ jobs:
           set-args: >-
             --set ingress.host=test.example.com
             --set server.config.allowedOrigins=https://example.com
-          token: ${{ secrets.GITHUB_TOKEN }}

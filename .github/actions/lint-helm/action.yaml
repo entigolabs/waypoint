@@ -9,16 +9,11 @@ inputs:
     description: Additional --set arguments passed to helm lint and helm template
     required: false
     default: ""
-  token:
-    description: GitHub token for Helm setup
-    required: true
 
 runs:
   using: composite
   steps:
     - uses: azure/setup-helm@v4
-      with:
-        token: ${{ inputs.token }}
     - name: Helm Lint
       shell: bash
       run: helm lint ${{ inputs.chart-path }} ${{ inputs.set-args }}
