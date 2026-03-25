@@ -1,4 +1,4 @@
-import { Tag } from 'antd';
+import { Flex, Tag } from 'antd';
 import { Category, getCoreCategories } from '../client';
 import React from 'react';
 import { DataTable } from './DataTable';
@@ -12,7 +12,7 @@ const columns = [
         dataIndex: 'emsIds',
         key: 'emsIds',
         render: (ids: string[]) =>
-            ids.map((id) => <Tag key={ id }>{ id }</Tag>),
+            <Flex gap={ 4 } wrap>{ ids.map((id) => <Tag key={ id }>{ id }</Tag>) }</Flex>,
     },
 ];
 
