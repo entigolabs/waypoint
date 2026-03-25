@@ -1,4 +1,4 @@
-import { Tag } from 'antd';
+import { Flex, Tag } from 'antd';
 import { EmsTheme, getCoreEmsThemes } from '../client';
 import React from 'react';
 import { DataTable } from './DataTable';
@@ -11,16 +11,16 @@ const columns = [
         dataIndex: 'translations',
         key: 'translations',
         render: (translations: EmsTheme['translations']) =>
-            translations.map((t) => (
+            <Flex gap={ 4 } wrap>{ translations.map((t) => (
                 <Tag key={ t.language }>{ t.language }: { t.value }</Tag>
-            )),
+            )) }</Flex>,
     },
     {
         title: 'EMS IDs',
         dataIndex: 'emsIds',
         key: 'emsIds',
         render: (ids: string[]) =>
-            ids.map((id) => <Tag key={ id }>{ id }</Tag>),
+            <Flex gap={ 4 } wrap>{ ids.map((id) => <Tag key={ id }>{ id }</Tag>) }</Flex>,
     },
 ];
 

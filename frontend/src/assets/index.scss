@@ -29,6 +29,10 @@ body,
   }
 }
 
+.ant-table-tbody .ant-table-row .ant-table-cell {
+  background-color: $color-bg-table-row;
+}
+
 .ant-pagination-options {
   display: inline-flex !important;
 }
