@@ -18,9 +18,10 @@ spec:
         - name: {{ .Release.Name }}-init
           image: "{{ .Values.db.image }}:{{ .Values.db.tag | default .Chart.AppVersion }}"
           args: [ "validate" ]
+          env:
+            - name: TERN_CONFIG
+              value: "/tern/tern.conf"
           envFrom:
-            - configMapRef:
-                name: {{ .Release.Name }}-db
             - secretRef:
                 name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-user
           resources: {{ toYaml .Values.db.resources | nindent 12 }}
@@ -32,7 +33,7 @@ spec:
           image: "{{ .Values.backend.image }}:{{ .Values.backend.tag | default .Chart.AppVersion }}"
           ports:
             - name: http
-              containerPort: {{ .Values.backend.config.port }}
+              containerPort: {{ .Values.backend.port }}
               protocol: TCP
           envFrom:
             - configMapRef:
@@ -61,13 +62,13 @@ spec:
           resources: {{ toYaml .Values.backend.resources | nindent 12 }}
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.backend.config.port }}
+              port: {{ .Values.backend.port }}
             initialDelaySeconds: 15
             periodSeconds: 20
           readinessProbe:
             httpGet:
               path: /health
-              port: {{ .Values.backend.config.port }}
+              port: {{ .Values.backend.port }}
             initialDelaySeconds: 5
             periodSeconds: 10
       volumes:
