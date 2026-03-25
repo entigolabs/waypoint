@@ -33,7 +33,7 @@ type DataTableProps<T extends object> = {
     errorMessage: string;
 }
 
-export function DataTable<T extends object>({ title, columns, rowKey, fetchData, errorMessage }: DataTableProps<T>) {
+export const DataTable = <T extends object>({ title, columns, rowKey, fetchData, errorMessage }: DataTableProps<T>) => {
     const [data, setData] = useState<T[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<ErrorState | null>(null);

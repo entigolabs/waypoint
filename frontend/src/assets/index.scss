@@ -1,5 +1,9 @@
 @use 'variables' as *;
 
+:root {
+  --custom-tooltip-bg: #{$color-bg-card};
+}
+
 html,
 body,
 #root,
@@ -7,6 +11,10 @@ body,
   margin: 0;
   height: 100%;
   background-color: $color-bg-main;
+
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 .ant-app>.ant-layout {
