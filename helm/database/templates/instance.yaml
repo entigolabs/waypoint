@@ -2,6 +2,8 @@ apiVersion: database.entigo.com/v1alpha1
 kind: PostgreSQLInstance
 metadata:
   name: {{ .Release.Name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
 spec:
   allocatedStorage: 20
   engineVersion: "18.3"
