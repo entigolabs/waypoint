@@ -3,12 +3,12 @@ kind: PostgreSQLInstance
 metadata:
   name: {{ .Release.Name }}
   annotations:
-    argocd.argoproj.io/sync-wave: "-2"
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   allocatedStorage: {{ .Values.allocatedStorage }}
   engineVersion: "18.3"
   instanceType: {{ .Values.instanceType }}
   allowMajorVersionUpgrade: false
   autoMinorVersionUpgrade: true
-  deletionProtection: true
+  deletionProtection: {{ .Values.deletionProtection }}
   multiAZ: {{ .Values.multiAZ }}
