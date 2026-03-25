@@ -82,7 +82,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ needs.changes.outputs.version }}
+            type=raw,value=${{ needs.version.outputs.version }}
             type=raw,value=latest
       - uses: docker/build-push-action@v6
         with:
@@ -114,7 +114,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}-db
           tags: |
-            type=raw,value=${{ needs.changes.outputs.version }}
+            type=raw,value=${{ needs.version.outputs.version }}
             type=raw,value=latest
       - uses: docker/build-push-action@v6
         with:
@@ -158,7 +158,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}-front
           tags: |
-            type=raw,value=${{ needs.changes.outputs.version }}
+            type=raw,value=${{ needs.version.outputs.version }}
             type=raw,value=latest
       - uses: docker/build-push-action@v6
         with:
@@ -185,10 +185,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Update chart version
         run: |
-          VERSION="${{ needs.changes.outputs.version }}"
+          VERSION="${{ needs.version.outputs.version }}"
           VERSION="${VERSION#v}"
           yq -i ".version = \"$VERSION\"" ${{ env.CHART_PATH }}/Chart.yaml
-          yq -i ".appVersion = \"${{ needs.changes.outputs.version }}\"" ${{ env.CHART_PATH }}/Chart.yaml
+          yq -i ".appVersion = \"${{ needs.version.outputs.version }}\"" ${{ env.CHART_PATH }}/Chart.yaml
           echo "BUILD_VERSION=$VERSION" >> $GITHUB_ENV
       - name: Package Helm chart
         run: helm package ${{ env.CHART_PATH }}

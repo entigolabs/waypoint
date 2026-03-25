@@ -9,7 +9,7 @@ spec:
   selector:
     app: {{ .Release.Name }}-front
   ports:
-    - name: {{ .Release.Name }}-front
+    - name: http
       port: 80
       protocol: TCP
       targetPort: 8080

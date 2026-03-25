@@ -28,5 +28,5 @@ spec:
               service:
                 name: {{ .Release.Name }}-front
                 port:
-                  name: {{ .Release.Name }}-front
+                  name: http
 {{- end }}
