@@ -2,6 +2,8 @@ apiVersion: database.entigo.com/v1alpha1
 kind: PostgreSQLDatabase
 metadata:
   name: {{ .Release.Name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   name: {{ .Values.database | required "database is required" }}
   owner: {{ .Release.Name | replace "-" "_" }}_owner

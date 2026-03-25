@@ -5,6 +5,7 @@ metadata:
   annotations:
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   activeDeadlineSeconds: 600
   parallelism: 1
@@ -20,7 +21,7 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-db
             - secretRef:
-                name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-user
+                name: {{ .Values.database.releaseName | required "database.releaseName is required" }}-{{ .Values.database.releaseName }}-user
           volumeMounts:
             - name: tern-config-volume
               mountPath: /tern

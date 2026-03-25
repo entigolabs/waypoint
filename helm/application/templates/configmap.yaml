@@ -3,10 +3,10 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}
 data:
-  SERVER_ADDR: ":{{ .Values.server.config.port }}"
-  ALLOWED_ORIGINS: {{ .Values.server.config.allowedOrigins | required "config.allowedOrigins is required" | quote }}
-  API_BASE_URL: {{ .Values.server.config.apiBaseUrl | required "config.apiBaseUrl is required" | quote }}
+  SERVER_ADDR: ":{{ .Values.backend.config.port }}"
+  ALLOWED_ORIGINS: {{ .Values.backend.config.allowedOrigins | required "config.allowedOrigins is required" | quote }}
+  API_BASE_URL: {{ .Values.backend.config.apiBaseUrl | required "config.apiBaseUrl is required" | quote }}
   DB_NAME: {{ .Values.database.name | required "database.name is required" | quote }}
-  LOG_LEVEL: {{ .Values.server.config.logLevel | quote }}
-  LOG_OUTPUT: {{ .Values.server.config.logOutput | quote }}
-  USER_AGENT: {{ .Values.server.config.userAgent | default (printf "waypoint/%s (github.com/entigolabs/waypoint)" .Chart.AppVersion) | quote }}
+  LOG_LEVEL: {{ .Values.backend.config.logLevel | quote }}
+  LOG_OUTPUT: {{ .Values.backend.config.logOutput | quote }}
+  USER_AGENT: {{ .Values.backend.config.userAgent | default (printf "waypoint/%s (github.com/entigolabs/waypoint)" .Chart.AppVersion) | quote }}

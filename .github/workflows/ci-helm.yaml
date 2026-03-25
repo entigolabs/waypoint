@@ -11,6 +11,7 @@ on:
       - main
     paths:
       - helm/application/**
+  workflow_dispatch:
 
 env:
   CHART_PATH: helm/application
@@ -26,4 +27,5 @@ jobs:
           chart-path: ${{ env.CHART_PATH }}
           set-args: >-
             --set ingress.host=test.example.com
-            --set server.config.allowedOrigins=https://example.com
+            --set backend.config.allowedOrigins=https://example.com
+            --set database.releaseName=test-db

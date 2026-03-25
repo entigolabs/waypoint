@@ -1,4 +1,4 @@
-server:
+backend:
   replicaCount: 2
   image: ghcr.io/entigolabs/waypoint
   tag: ""  # defaults to Chart.AppVersion
@@ -31,9 +31,23 @@ db:
       cpu: 100m
       memory: 128Mi
 
+frontend:
+  replicaCount: 2
+  image: ghcr.io/entigolabs/waypoint-front
+  tag: ""  # defaults to Chart.AppVersion
+  service:
+    type: ClusterIP
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
 database:
   name: "waypoint"
-  releaseName: "waypoint-db"
+  releaseName: ""
 
 ingress:
   enabled: true
