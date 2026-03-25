@@ -5,7 +5,7 @@ metadata:
   labels:
     app: {{ .Release.Name }}
 spec:
-  replicas: {{ .Values.server.replicaCount }}
+  replicas: {{ .Values.backend.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}
@@ -29,10 +29,10 @@ spec:
               mountPath: /tern
       containers:
         - name: {{ .Release.Name }}
-          image: "{{ .Values.server.image }}:{{ .Values.server.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.backend.image }}:{{ .Values.backend.tag | default .Chart.AppVersion }}"
           ports:
             - name: http
-              containerPort: {{ .Values.server.config.port }}
+              containerPort: {{ .Values.backend.config.port }}
               protocol: TCP
           envFrom:
             - configMapRef:
@@ -58,16 +58,16 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-api-user
                   key: username
-          resources: {{ toYaml .Values.server.resources | nindent 12 }}
+          resources: {{ toYaml .Values.backend.resources | nindent 12 }}
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.server.config.port }}
+              port: {{ .Values.backend.config.port }}
             initialDelaySeconds: 15
             periodSeconds: 20
           readinessProbe:
             httpGet:
               path: /health
-              port: {{ .Values.server.config.port }}
+              port: {{ .Values.backend.config.port }}
             initialDelaySeconds: 5
             periodSeconds: 10
       volumes:
