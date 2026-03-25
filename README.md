@@ -12,10 +12,10 @@ Database needs to be deployed and synced before the Waypoint application.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: waypoint-helm-db
+  name: waypoint-db
 spec:
   destination:
-    namespace: helm-test
+    namespace: default
     server: https://kubernetes.default.svc
   source:
     path: ''
@@ -36,10 +36,10 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: waypoint-helm
+  name: waypoint
 spec:
   destination:
-    namespace: helm-test
+    namespace: default
     server: https://kubernetes.default.svc
   source:
     path: ''
@@ -53,7 +53,7 @@ spec:
         - name: ingress.host
           value: waypoint.example.com
         - name: database.releaseName
-          value: waypoint-helm-db
+          value: waypoint-db
   sources: []
   project: default
 ```
