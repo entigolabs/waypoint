@@ -1,4 +1,4 @@
-import { ConfigProvider, Flex, Layout, Select, Typography, Image, Button, Drawer } from 'antd';
+import { ConfigProvider, Flex, Layout, Select, Typography, Image, Button, Drawer, Tooltip } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import entigoLogo from './assets/entigo.svg';
@@ -28,11 +28,19 @@ const App: React.FC = () => {
 
     const controls = (
         <>
-            <Flex gap={ 8 } align="center">
-                <Text>API URL:</Text>
-                <Text type="secondary">{ `${ apiUrl }/api` }</Text>
+            <Flex gap={ 8 } align="center" style={ { minWidth: 0 } }>
+                <Text style={ { whiteSpace: 'nowrap' } }>API URL:</Text>
+                <Tooltip
+                    title={ `${ apiUrl }/api` }
+                    color="var(--custom-tooltip-bg)"
+                    mouseLeaveDelay={ 0.2 }
+                >
+                    <Text type="secondary" ellipsis>
+                        { `${ apiUrl }/api` }
+                    </Text>
+                </Tooltip>
             </Flex>
-            <Flex gap={ 8 } align="center">
+            <Flex gap={ 8 } align="center" style={ { whiteSpace: 'nowrap', flexShrink: 0 } }>
                 <Text>Font size:</Text>
                 <Select
                     aria-label="Font size"
