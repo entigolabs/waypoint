@@ -5,10 +5,10 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
-  allocatedStorage: 20
+  allocatedStorage: {{ .Values.allocatedStorage }}
   engineVersion: "18.3"
   instanceType: {{ .Values.instanceType }}
   allowMajorVersionUpgrade: false
   autoMinorVersionUpgrade: true
   deletionProtection: true
-  multiAZ: false
+  multiAZ: {{ .Values.multiAZ }}

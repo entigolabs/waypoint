@@ -2,3 +2,5 @@ instanceType: "db.t3.micro"
 database: "waypoint"
 dbUser: ""
 apiUser: ""
+allocatedStorage: 20
+multiAZ: false

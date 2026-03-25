@@ -23,12 +23,12 @@ spec:
           resources: {{ toYaml .Values.frontend.resources | nindent 12 }}
           livenessProbe:
             tcpSocket:
-              port: 8080
+              port: {{ .Values.frontend.port }}
             initialDelaySeconds: 15
             periodSeconds: 20
           readinessProbe:
             httpGet:
               path: /
-              port: 8080
+              port: {{ .Values.frontend.port }}
             initialDelaySeconds: 5
             periodSeconds: 10

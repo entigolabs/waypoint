@@ -4,14 +4,14 @@ backend:
   tag: ""  # defaults to Chart.AppVersion
   service:
     type: ClusterIP
-    port: 8081
+  port: 8081
   config:
-    port: 8081
-    allowedOrigins: ""   # required, comma-separated (e.g. "https://example.com")
-    apiBaseUrl: "https://andmed.eesti.ee/api"
-    logLevel: "info"
-    logOutput: "stdout"
-    userAgent: ""
+    SERVER_ADDR: ":8081"
+    ALLOWED_ORIGINS: "*"   # required, comma-separated (e.g. "https://example.com")
+    API_BASE_URL: "https://andmed.eesti.ee/api"
+    DB_NAME: "waypoint"
+    LOG_LEVEL: "info"
+    LOG_OUTPUT: "stdout"
   resources:
     requests:
       cpu: 100m
@@ -37,6 +37,7 @@ frontend:
   tag: ""  # defaults to Chart.AppVersion
   service:
     type: ClusterIP
+  port: 8080
   resources:
     requests:
       cpu: 100m
@@ -47,12 +48,11 @@ frontend:
 
 database:
   name: "waypoint"
-  releaseName: ""
+  releaseName: "waypoint-db"
 
 ingress:
-  enabled: true
   className: "alb"
-  host: ""
+  host: "test.example.com"
   annotations:
     alb.ingress.kubernetes.io/group.name: "external"
     alb.ingress.kubernetes.io/scheme: "internet-facing"

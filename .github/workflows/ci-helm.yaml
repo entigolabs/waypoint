@@ -25,7 +25,3 @@ jobs:
       - uses: ./.github/actions/lint-helm
         with:
           chart-path: ${{ env.CHART_PATH }}
-          set-args: >-
-            --set ingress.host=test.example.com
-            --set backend.config.allowedOrigins=https://example.com
-            --set database.releaseName=test-db

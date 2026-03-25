@@ -17,9 +17,10 @@ spec:
         - name: {{ .Release.Name }}-db
           image: "{{ .Values.db.image }}:{{ .Values.db.tag | default .Chart.AppVersion }}"
           resources: {{ toYaml .Values.db.resources | nindent 12 }}
+          env:
+            - name: TERN_CONFIG
+              value: "/tern/tern.conf"
           envFrom:
-            - configMapRef:
-                name: {{ .Release.Name }}-db
             - secretRef:
                 name: {{ .Values.database.releaseName | required "database.releaseName is required" }}-{{ .Values.database.releaseName }}-user
           volumeMounts:
