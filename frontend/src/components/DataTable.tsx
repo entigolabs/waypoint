@@ -1,26 +1,23 @@
 import { Alert, Card, Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useEffect, useState } from 'react';
+import { Errors } from '../client';
 import styles from './DashboardView.module.scss';
 
 const { Title } = Typography;
 
-const extractErrorInfo = (error: unknown, response: Response | undefined): { message: string; code: number | undefined } => {
+const extractErrorInfo = (error: Errors | string, response: Response | undefined): ErrorState => {
     if (!response) {
         return {
             message: 'The request failed. The server response could not be read — this is likely caused by a CORS restriction on the API endpoint. Check the browser console for details.',
             code: undefined,
         };
     }
-    const code = response.status;
-    if (typeof error === 'object' && error !== null && 'errors' in error) {
-        const errors = (error as { errors: { message: string }[] }).errors;
-        if (Array.isArray(errors) && errors.length > 0) {
-            return { message: errors.map(e => e.message).join(', '), code };
-        }
+    if (typeof error === 'string') {
+        return { message: error, code: response.status };
     }
-    const message = typeof error === 'string' ? error : error instanceof Error ? error.message : String(error);
-    return { message, code };
+    const message = error.errors?.map(e => e.message).join(', ') ?? 'An unknown error occurred';
+    return { message, code: response.status };
 };
 
 type ErrorState = {
@@ -32,7 +29,7 @@ type DataTableProps<T extends object> = {
     title: string;
     columns: ColumnsType<T>;
     rowKey: string;
-    fetchData: () => Promise<{ data?: { data: T[] }; error?: unknown; response?: Response }>;
+    fetchData: () => Promise<{ data?: { data: T[] }; error?: Errors | string; response?: Response }>;
     errorMessage: string;
 }
 
@@ -55,7 +52,7 @@ export function DataTable<T extends object>({ title, columns, rowKey, fetchData,
                 }
                 setData(data.data);
             })
-            .catch((err: unknown) => setError({ message: String(err), code: undefined }))
+            .catch((err: Error) => setError({ message: err.message, code: undefined }))
             .finally(() => setLoading(false));
     }, [fetchData]);
 
