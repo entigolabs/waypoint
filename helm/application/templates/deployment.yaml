@@ -42,22 +42,22 @@ spec:
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.releaseName | required "database.releaseName is required" }}-{{ .Values.database.releaseName }}-api-user
+                  name: {{ .Values.database.releaseName | required "database.releaseName is required" }}-{{ .Release.Name }}-api-user
                   key: endpoint
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-api-user
+                  name: {{ .Values.database.releaseName }}-{{ .Release.Name }}-api-user
                   key: password
             - name: DB_PORT
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-api-user
+                  name: {{ .Values.database.releaseName }}-{{ .Release.Name }}-api-user
                   key: port
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-api-user
+                  name: {{ .Values.database.releaseName }}-{{ .Release.Name }}-api-user
                   key: username
           resources: {{ toYaml .Values.backend.resources | nindent 12 }}
           livenessProbe:

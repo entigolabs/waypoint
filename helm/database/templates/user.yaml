@@ -26,19 +26,3 @@ spec:
   grant:
     roles:
       - {{ .Release.Name | replace "-" "_" }}_owner
----
-apiVersion: database.entigo.com/v1alpha1
-kind: PostgreSQLUser
-metadata:
-  name: {{ .Release.Name }}-api-user
-spec:
-  name: {{ .Values.apiUser | required "apiUser is required" }}
-  instanceRef:
-    name: {{ .Release.Name }}
-  login: true
-  createDb: false
-  createRole: false
-  inherit: true
-  grant:
-    roles:
-      - core_rw

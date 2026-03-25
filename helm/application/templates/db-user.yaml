@@ -1,0 +1,17 @@
+apiVersion: database.entigo.com/v1alpha1
+kind: PostgreSQLUser
+metadata:
+  name: {{ .Release.Name }}-api-user
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  name: {{ .Values.database.apiUser | required "apiUser is required" }}
+  instanceRef:
+    name: {{ .Values.database.releaseName }}
+  login: true
+  createDb: false
+  createRole: false
+  inherit: true
+  grant:
+    roles:
+      - core_rw

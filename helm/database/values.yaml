@@ -1,7 +1,6 @@
 instanceType: "db.t3.micro"
 database: "waypoint"
 dbUser: "dbuser"
-apiUser: "apiuser"
 allocatedStorage: 20
 multiAZ: false
 deletionProtection: true

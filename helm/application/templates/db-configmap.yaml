@@ -3,13 +3,13 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-db-tern
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: "-2"
 data:
   tern.conf: |
     [database]
     host = {{`{{env "endpoint"}}`}}
     port = {{`{{env "port"}}`}}
-    database = {{ .Values.database.name | required "database.name is required" | quote }}
+    database = {{ .Values.database.name | required "database.name is required" }}
     user = {{`{{env "username"}}`}}
     password = {{`{{env "password"}}`}}
     version_table = sys.schema_version

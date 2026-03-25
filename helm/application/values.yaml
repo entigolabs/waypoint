@@ -12,6 +12,7 @@ backend:
     DB_NAME: "waypoint"
     LOG_LEVEL: "info"
     LOG_OUTPUT: "stdout"
+    USER_AGENT: "waypoint/v1.0.0 (github.com/entigolabs/waypoint)"
   resources:
     requests:
       cpu: 100m
@@ -48,6 +49,7 @@ frontend:
 
 database:
   name: "waypoint"
+  apiUser: "apiuser"
   releaseName: "waypoint-db"
 
 ingress:
