@@ -13,7 +13,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: azure/setup-helm@v4
+    - uses: azure/setup-helm@v5
     - name: Helm Lint
       shell: bash
       run: helm lint ${{ inputs.chart-path }} ${{ inputs.set-args }}
