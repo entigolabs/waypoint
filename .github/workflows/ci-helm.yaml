@@ -11,6 +11,7 @@ on:
       - main
     paths:
       - helm/application/**
+  workflow_dispatch:
 
 env:
   CHART_PATH: helm/application
