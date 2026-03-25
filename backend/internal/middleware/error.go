@@ -26,6 +26,14 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
 	WriteErrorResponse(w, r, err, "")
 }
 
+func internalError() EntigoError {
+	return EntigoError{
+		Status:  http.StatusInternalServerError,
+		Code:    "InternalServerError",
+		Message: http.StatusText(http.StatusInternalServerError),
+	}
+}
+
 func WriteErrorResponse(w http.ResponseWriter, r *http.Request, err error, innerMessage string) {
 	var ee EntigoError
 	ok := errors.As(err, &ee)
@@ -39,17 +47,14 @@ func WriteErrorResponse(w http.ResponseWriter, r *http.Request, err error, inner
 
 	if !ok {
 		slog.Error(innerMessage, "error", err)
-		ee = EntigoError{
-			Status:  http.StatusInternalServerError,
-			Code:    "InternalServerError",
-			Message: http.StatusText(http.StatusInternalServerError),
-		}
+		ee = internalError()
 	}
 
 	if lrw, typeOk := w.(*LoggingResponseWriter); typeOk {
 		if innerMessage != "" {
 			lrw.ErrorMessage = innerMessage
 		} else if ok {
+			lrw.ErrorType = ee.Code
 			lrw.ErrorMessage = ee.Message
 		} else {
 			lrw.ErrorMessage = err.Error()

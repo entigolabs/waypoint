@@ -25,10 +25,10 @@ npm install
 
 ## Environment variables
 
-| Variable | Description | Default |
-|---|---|---|
-| `VITE_API_ENDPOINT` | Base URL of the Waypoint API | Same origin as the frontend |
-| `VITE_APP_NAME` | Display name shown in the header | `Entigo Portal minimal` |
+| Variable            | Description                      | Default                     |
+|---------------------|----------------------------------|-----------------------------|
+| `VITE_API_ENDPOINT` | Base URL of the Waypoint API     | Same origin as the frontend |
+| `VITE_APP_NAME`     | Display name shown in the header | `Waypoint`                  |
 
 ## Development
 For development, with hot reload:
