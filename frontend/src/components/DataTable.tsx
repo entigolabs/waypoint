@@ -43,7 +43,11 @@ export function DataTable<T extends object>({ title, columns, rowKey, fetchData,
                     setError(extractErrorInfo(error, response));
                     return;
                 }
-                setData(data!.data);
+                if (!data || !Array.isArray(data.data)) {
+                    setError({ message: 'The server returned a 200 response but the body was not valid JSON.', code: response?.status });
+                    return;
+                }
+                setData(data.data);
             })
             .catch((err: unknown) => setError({ message: String(err), code: undefined }))
             .finally(() => setLoading(false));

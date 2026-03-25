@@ -23,14 +23,14 @@ const renderFontSizeOption = (option: { label?: React.ReactNode; value?: string 
 const App: React.FC = () => {
     const [fontSize, setFontSize] = useState(14);
     const [menuOpen, setMenuOpen] = useState(false);
-    const apiUrl = import.meta.env.VITE_API_ENDPOINT || window.location.origin;
+    const apiUrl = import.meta.env.VITE_API_ENDPOINT || "";
     const isIndexPage = window.location.pathname === '/';
 
     const controls = (
         <>
             <Flex gap={ 8 } align="center">
                 <Text>API URL:</Text>
-                <Text type="secondary">{ apiUrl }</Text>
+                <Text type="secondary">{ `${ apiUrl }/api` }</Text>
             </Flex>
             <Flex gap={ 8 } align="center">
                 <Text>Font size:</Text>
