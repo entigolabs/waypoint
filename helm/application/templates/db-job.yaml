@@ -21,7 +21,7 @@ spec:
             - configMapRef:
                 name: {{ .Release.Name }}-db
             - secretRef:
-                name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-user
+                name: {{ .Values.database.releaseName | required "database.releaseName is required" }}-{{ .Values.database.releaseName }}-user
           volumeMounts:
             - name: tern-config-volume
               mountPath: /tern

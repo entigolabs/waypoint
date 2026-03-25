@@ -39,6 +39,7 @@ jobs:
           set-args: >-
             --set ingress.host=test.example.com
             --set backend.config.allowedOrigins=https://example.com
+            --set database.releaseName=test-db
 
   lint-and-test-front:
     name: Lint and test frontend

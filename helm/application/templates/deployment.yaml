@@ -41,7 +41,7 @@ spec:
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.releaseName }}-{{ .Values.database.releaseName }}-api-user
+                  name: {{ .Values.database.releaseName | required "database.releaseName is required" }}-{{ .Values.database.releaseName }}-api-user
                   key: endpoint
             - name: DB_PASSWORD
               valueFrom:

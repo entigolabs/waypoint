@@ -47,7 +47,7 @@ frontend:
 
 database:
   name: "waypoint"
-  releaseName: "waypoint-db"
+  releaseName: ""
 
 ingress:
   enabled: true
