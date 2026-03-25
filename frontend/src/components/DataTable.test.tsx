@@ -58,7 +58,18 @@ test('shows error when fetch promise rejects', async () => {
     const fetchData = vi.fn().mockRejectedValue(new Error('Unexpected failure'));
     render(<DataTable<TestRow> { ...defaultProps } fetchData={ fetchData } />);
     await screen.findByText('Failed to load test data');
-    await screen.findByText('Error: Unexpected failure');
+    await screen.findByText('Unexpected failure');
+});
+
+test('shows error messages from JSON error body', async () => {
+    const fetchData = vi.fn().mockResolvedValue({
+        data: undefined,
+        error: { errors: [{ code: 'InternalServerError', message: 'Internal Server Error' }] },
+        response: { status: 500 } as Response,
+    });
+    render(<DataTable<TestRow> { ...defaultProps } fetchData={ fetchData } />);
+    await screen.findByText('Failed to load test data (500)');
+    await screen.findByText('Internal Server Error');
 });
 
 test('loading state has no accessibility violations', async () => {
