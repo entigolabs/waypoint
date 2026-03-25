@@ -13,6 +13,12 @@ const extractErrorInfo = (error: unknown, response: Response | undefined): { mes
         };
     }
     const code = response.status;
+    if (typeof error === 'object' && error !== null && 'errors' in error) {
+        const errors = (error as { errors: { message: string }[] }).errors;
+        if (Array.isArray(errors) && errors.length > 0) {
+            return { message: errors.map(e => e.message).join(', '), code };
+        }
+    }
     const message = typeof error === 'string' ? error : error instanceof Error ? error.message : String(error);
     return { message, code };
 };
