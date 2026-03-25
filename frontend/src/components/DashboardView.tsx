@@ -5,7 +5,7 @@ import { CategoryTable } from './CategoryTable';
 import { EmsCategoryTable } from './EmsCategoryTable';
 import { EmsThemeTable } from './EmsThemeTable';
 
-client.setConfig({ baseUrl: import.meta.env.VITE_API_ENDPOINT || '' });
+client.setConfig({ baseUrl: import.meta.env.VITE_API_ENDPOINT ? `${ import.meta.env.VITE_API_ENDPOINT }/api` : '/api' });
 
 export const DashboardView: React.FC = () => {
     return (

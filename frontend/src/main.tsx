@@ -7,7 +7,7 @@ import { getAntdThemeConfig } from './theme';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <ConfigProvider theme={getAntdThemeConfig()}>
+        <ConfigProvider theme={ getAntdThemeConfig() }>
             <App>
                 <AppRoot />
             </App>
