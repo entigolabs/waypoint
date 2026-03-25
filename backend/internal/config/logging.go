@@ -16,6 +16,7 @@ import (
 
 type LogLevel string
 type LogOutput string
+type LogFormat string
 
 const (
 	LogLevelDebug LogLevel = "debug"
@@ -27,6 +28,12 @@ const (
 const (
 	LogOutputStdout LogOutput = "stdout"
 	LogOutputFile   LogOutput = "file"
+)
+
+const (
+	LogFormatText LogFormat = "text"
+	LogFormatJSON LogFormat = "json"
+	LogFormatOTEL LogFormat = "otel"
 )
 
 type levelHandler struct {
@@ -51,21 +58,45 @@ func (h *levelHandler) WithGroup(name string) slog.Handler {
 }
 
 func NewLogger(cfg LogConfig) (*slog.Logger, func(context.Context) error, error) {
-	var writer io.Writer
+	handler, shutdown, err := getHandler(cfg)
+	if err != nil {
+		return nil, nil, err
+	}
+	return slog.New(handler), shutdown, nil
+}
+
+func getOutputWriter(cfg LogConfig) io.Writer {
 	switch cfg.LogOutput {
 	case LogOutputFile:
 		f, err := os.OpenFile(cfg.LogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			slog.Warn("failed to open log file, defaulting to stdout", "error", err)
-			writer = os.Stdout
-		} else {
-			writer = f
+		if err == nil {
+			return f
 		}
+		slog.Warn("failed to open log file, defaulting to stdout", "error", err)
 	case LogOutputStdout:
-		writer = os.Stdout
 	default:
-		return nil, nil, fmt.Errorf("unknown log output: %s", cfg.LogOutput)
+		slog.Warn("unknown log output, defaulting to stdout", "output", cfg.LogOutput)
 	}
+	return os.Stdout
+}
+
+func getHandler(cfg LogConfig) (slog.Handler, func(context.Context) error, error) {
+	var level slog.Level
+	_ = level.UnmarshalText([]byte(cfg.LogLevel))
+	writer := getOutputWriter(cfg)
+
+	opts := &slog.HandlerOptions{Level: level}
+	if cfg.LogFormat == LogFormatText {
+		return slog.NewTextHandler(writer, opts), nil, nil
+	} else if cfg.LogFormat == LogFormatJSON {
+		return slog.NewJSONHandler(writer, opts), nil, nil
+	} else if cfg.LogFormat != LogFormatOTEL {
+		slog.Warn("Log format is not supported, defaulting to otel")
+	}
+	return getOTELHandler(writer, level)
+}
+
+func getOTELHandler(writer io.Writer, level slog.Level) (slog.Handler, func(context.Context) error, error) {
 	exporter, err := stdoutlog.New(stdoutlog.WithWriter(writer))
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create log exporter: %w", err)
@@ -85,7 +116,5 @@ func NewLogger(cfg LogConfig) (*slog.Logger, func(context.Context) error, error)
 		log.WithResource(res),
 	)
 	handler := otelslog.NewHandler("waypoint-logger", otelslog.WithLoggerProvider(lp))
-	var level slog.Level
-	_ = level.UnmarshalText([]byte(cfg.LogLevel))
-	return slog.New(&levelHandler{level: level, handler: handler}), lp.Shutdown, nil
+	return &levelHandler{level: level, handler: handler}, lp.Shutdown, nil
 }

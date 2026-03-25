@@ -36,8 +36,9 @@ type DBConfig struct {
 }
 
 type LogConfig struct {
-	LogLevel  LogLevel  `mapstructure:"LOG_LEVEL"`
-	LogOutput LogOutput `mapstructure:"LOG_OUTPUT"`
+	LogLevel  LogLevel  `mapstructure:"LOG_LEVEL" required:"false"`
+	LogFormat LogFormat `mapstructure:"LOG_FORMAT" required:"false"`
+	LogOutput LogOutput `mapstructure:"LOG_OUTPUT" required:"false"`
 	LogPath   string    `mapstructure:"LOG_PATH" required:"false"`
 }
 
@@ -64,6 +65,7 @@ func LoadConfig(path string) (config Config, err error) {
 
 	v.SetDefault("SERVER_ADDR", ":8081")
 	v.SetDefault("LOG_LEVEL", LogLevelInfo)
+	v.SetDefault("LOG_FORMAT", LogFormatOTEL)
 	v.SetDefault("LOG_OUTPUT", LogOutputStdout)
 
 	if configFile != "" {
@@ -179,6 +181,12 @@ func validateField(fieldName string, value interface{}) error {
 		case LogLevelDebug, LogLevelInfo, LogLevelWarn, LogLevelError:
 		default:
 			return fmt.Errorf("LOG_LEVEL must be one of: %s, %s, %s, %s", LogLevelDebug, LogLevelInfo, LogLevelWarn, LogLevelError)
+		}
+	case "LogFormat":
+		switch value.(LogFormat) {
+		case LogFormatText, LogFormatJSON, LogFormatOTEL:
+		default:
+			return fmt.Errorf("LOG_FORMAT must be one of: %s, %s, %s", LogFormatText, LogFormatJSON, LogFormatOTEL)
 		}
 	case "Port":
 		port, ok := value.(int)

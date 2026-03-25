@@ -29,6 +29,7 @@ Supported environment variables:
 * DB_PORT - Database port
 * DB_NAME - Database name
 * LOG_LEVEL - Log level: `debug`, `info`, `warn`, `error`. Default: **info**
+* LOG_FORMAT - Log format: `text`, `json`, `otel`. Default: **otel**
 * LOG_OUTPUT - Log output: `stdout`, `file`. Default: **stdout**
 * LOG_PATH - Log file path, required when LOG_OUTPUT is set to `file`
 

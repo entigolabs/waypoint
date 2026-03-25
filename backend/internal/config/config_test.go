@@ -106,6 +106,17 @@ func TestLoadConfig_InvalidLogLevel(t *testing.T) {
 	assert.Contains(t, err.Error(), "LOG_LEVEL")
 }
 
+func TestLoadConfig_InvalidLogFormat(t *testing.T) {
+	setDBEnv(t)
+	t.Setenv("API_BASE_URL", "https://api.example.com")
+	t.Setenv("ALLOWED_ORIGINS", "http://localhost:3000")
+	t.Setenv("LOG_FORMAT", "xml")
+
+	_, err := LoadConfig(t.TempDir())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "LOG_FORMAT")
+}
+
 func TestLoadConfig_InvalidLogOutput(t *testing.T) {
 	setDBEnv(t)
 	t.Setenv("API_BASE_URL", "https://api.example.com")

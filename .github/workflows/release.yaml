@@ -83,7 +83,9 @@ jobs:
             type=raw,value=latest
       - uses: docker/build-push-action@v6
         with:
-          build-args: GITHUB_SHA=${GITHUB_SHA}
+          build-args: |
+            GITHUB_SHA=${{ github.sha }}
+            VERSION=${{ needs.version.outputs.version }}
           context: backend
           push: true
           sbom: true

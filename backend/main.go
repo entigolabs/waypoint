@@ -42,7 +42,9 @@ func main() {
 	if runErr != nil {
 		slog.Error("fatal error", "error", runErr)
 	}
-	_ = closeLogger(context.Background())
+	if closeLogger != nil {
+		_ = closeLogger(context.Background())
+	}
 	if runErr != nil {
 		os.Exit(1)
 	}
