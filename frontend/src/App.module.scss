@@ -1,3 +1,5 @@
+@use './assets/variables' as *;
+
 .layout {
     height: 100vh;
     overflow: hidden;
@@ -8,9 +10,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 24px;
-    border-bottom: 1px solid #1c293d;
+    border-bottom: 1px solid $color-border;
     height: 56px;
-    background-color: #16181c;
+    background-color: $color-bg-header;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -30,13 +32,29 @@
 .title {
     font-size: 15px;
     font-weight: 600;
-    color: #dcdcdc !important;
+    color: $color-text-primary !important;
     margin: 0 !important;
     line-height: 1 !important;
 }
 
+.desktopControls {
+    @media (max-width: 640px) {
+        display: none;
+    }
+}
+
+.hamburger {
+    display: none;
+    color: $color-text-primary !important;
+    font-size: 18px !important;
+
+    @media (max-width: 640px) {
+        display: flex;
+    }
+}
+
 .content {
-    background-color: #141414;
+    background-color: $color-bg-main;
     display: flex;
     flex-direction: column;
     align-items: stretch;

@@ -1,4 +1,5 @@
-import { ConfigProvider, Flex, Layout, Select, Typography, Image } from 'antd';
+import { ConfigProvider, Flex, Layout, Select, Typography, Image, Button, Drawer } from 'antd';
+import { MenuOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import entigoLogo from './assets/entigo.svg';
 import { DashboardView } from './components/DashboardView';
@@ -21,8 +22,30 @@ const renderFontSizeOption = (option: { label?: React.ReactNode; value?: string 
 
 const App: React.FC = () => {
     const [fontSize, setFontSize] = useState(14);
+    const [menuOpen, setMenuOpen] = useState(false);
     const apiUrl = import.meta.env.VITE_API_ENDPOINT || window.location.origin;
     const isIndexPage = window.location.pathname === '/';
+
+    const controls = (
+        <>
+            <Flex gap={ 8 } align="center">
+                <Text>API URL:</Text>
+                <Text type="secondary">{ apiUrl }</Text>
+            </Flex>
+            <Flex gap={ 8 } align="center">
+                <Text>Font size:</Text>
+                <Select
+                    aria-label="Font size"
+                    value={ fontSize }
+                    options={ fontSizeOptions }
+                    onChange={ setFontSize }
+                    optionRender={ renderFontSizeOption }
+                    labelRender={ renderFontSizeOption }
+                    style={ { width: 150 } }
+                />
+            </Flex>
+        </>
+    );
 
     return (
         <ConfigProvider theme={ { token: { fontSize, fontSizeSM: fontSize } } }>
@@ -31,25 +54,26 @@ const App: React.FC = () => {
                     <a href="/" className={ styles.logoArea }>
                         <Image src={ entigoLogo } className={ styles.logo } alt="Entigo" preview={ false } />
                     </a>
-                    <Flex gap={ 16 } align="center">
-                        <Flex gap={ 8 } align="center">
-                            <Text>API URL:</Text>
-                            <Text type="secondary">
-                                { apiUrl }
-                            </Text>
-                        </Flex>
-                        <Flex gap={ 8 } align="center">
-                            <Text>Font size:</Text>
-                            <Select
-                                aria-label="Font size"
-                                value={ fontSize }
-                                options={ fontSizeOptions }
-                                onChange={ setFontSize }
-                                optionRender={ renderFontSizeOption }
-                                labelRender={ renderFontSizeOption }
-                                style={ { width: 150 } } />
-                        </Flex>
+                    <Flex gap={ 16 } align="center" className={ styles.desktopControls }>
+                        { controls }
                     </Flex>
+                    <Button
+                        type="text"
+                        icon={ <MenuOutlined /> }
+                        className={ styles.hamburger }
+                        onClick={ () => setMenuOpen(true) }
+                        aria-label="Open menu" />
+                    <Drawer
+                        title="Settings"
+                        placement="right"
+                        open={ menuOpen }
+                        onClose={ () => setMenuOpen(false) }
+                        size={ 350 }
+                    >
+                        <Flex vertical gap={ 16 }>
+                            { controls }
+                        </Flex>
+                    </Drawer>
                 </Header>
                 <Content className={ styles.content }>
                     { isIndexPage ? <DashboardView /> : <NotFoundView /> }

@@ -1,37 +1,34 @@
+@use 'variables' as *;
+
 html,
 body,
 #root,
-#root > .ant-app {
+#root>.ant-app {
   margin: 0;
   height: 100%;
-  background-color: #141414;
+  background-color: $color-bg-main;
 }
 
-.ant-app > .ant-layout {
+.ant-app>.ant-layout {
   margin: 0;
   height: 100%;
-  background-color: #141414;
+  background-color: $color-bg-main;
 }
 
 .ant-notification-notice {
-  background-color: #141414;
-  border-color: #1c293d;
+  background-color: $color-bg-main;
+  border-color: $color-border;
   border-style: solid;
   border-radius: 8px;
-  box-shadow: 3px 3px 10px 0 #1c293d;
+  box-shadow: 3px 3px 10px 0 $color-border;
 
   .ant-notification-notice-description,
   .ant-notification-notice-message,
   .ant-notification-notice-icon {
-    color: #7e7e7e !important;
+    color: $color-text-muted !important;
   }
 }
 
-.ant-notification-notice-error {
-  border: 1px solid !important;
-  color: #7e7e7e !important;
-
-  .ant-notification-notice-icon {
-    color: #ff4d4f !important;
-  }
+.ant-pagination-options {
+  display: inline-flex !important;
 }
