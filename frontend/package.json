@@ -10,7 +10,7 @@
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate": "openapi-ts --client @hey-api/client-fetch --input ../openapi/openapi.yaml --output ./src/client"
+    "generate": "openapi-ts --client @hey-api/client-fetch --input ../openapi.yaml --output ./src/client"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",

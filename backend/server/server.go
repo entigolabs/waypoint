@@ -6,7 +6,7 @@ import (
 	"github.com/entigolabs/waypoint/internal/db"
 )
 
-//go:generate go tool oapi-codegen --config=../../openapi/oapi-config.yaml -o oapigen.go ../../openapi/openapi.yaml
+//go:generate go tool oapi-codegen --config=oapi-config.yaml -o oapigen.go ../../openapi.yaml
 
 type Server struct {
 	db dbReader

@@ -33,6 +33,15 @@ Supported environment variables:
 * LOG_OUTPUT - Log output: `stdout`, `file`. Default: **stdout**
 * LOG_PATH - Log file path, required when LOG_OUTPUT is set to `file`
 
+## Endpoints
+
+Server includes all public endpoints from the `openapi.yaml` spec under `/api` path. Additionally, there are internal endpoints for cluster health checks and metrics.
+
+| Method | Endpoint | Description           |
+|--------|----------|-----------------------|
+| GET    | /health  | Health check endpoint |
+| GET    | /metrics | Prometheus metrics    |
+
 ## Database
 
 Database migrations are managed using [tern](https://github.com/jackc/tern/tree/master).
