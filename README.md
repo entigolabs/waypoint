@@ -1,6 +1,6 @@
 # Waypoint
 
-Waypoint is a demo application that showcases automated application provisioning into a Kubernetes cluster using [Entigo Infralib](https://github.com/entigolabs/entigo-infralib). It demonstrates data gathering from an external public API, storing the results in a database, and serving them through a web interface — running as multiple replicas for redundancy.
+Waypoint is a demo application that showcases automated application provisioning into a Kubernetes cluster using [Entigo Infralib](https://github.com/entigolabs/entigo-infralib). It demonstrates data gathering from an external public API, storing the results in a database, and serving them through a web interface. Capable of running as multiple replicas for redundancy.
 
 The application is API-first: both components generate their client and server code from a shared [OpenAPI specification](./openapi.yaml).
 
@@ -23,9 +23,9 @@ Frontend is a React application that features:
 
 To run the full application locally:
 1. Start the database: `docker compose up -d` in the `backend/` directory.
-2. Run database migrations — see [backend/README.md](./backend/README.md#database).
-3. Start the backend — see [backend/README.md](./backend/README.md#running-locally).
-4. Start the frontend — see [frontend/README.md](./frontend/README.md#development).
+2. Run database migrations, described in [backend/README.md](./backend/README.md#database).
+3. Start the [backend](./backend/README.md#running-locally).
+4. Start the [frontend](./frontend/README.md#development).
 
 ## CI/CD
 
