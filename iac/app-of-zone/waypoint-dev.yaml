@@ -37,6 +37,7 @@ metadata:
 spec:
   destination:
     server: https://kubernetes.default.svc
+    namespace: waypoint-dev
   project: waypoint-dev
   sources:
   - repoURL: git@github.com:entigolabs/waypoint.git
