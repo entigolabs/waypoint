@@ -26,31 +26,3 @@ metadata:
     pod-security.kubernetes.io/warn: baseline
   annotations:
     argocd.argoproj.io/sync-wave: "1"
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: apps-waypoint-prod
-  namespace: waypoint-prod
-spec:
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: waypoint-prod
-  project: waypoint-prod
-  sources:
-  - repoURL: git@github.com:entigolabs/waypoint.git
-    path: iac/app-of-prod
-    targetRevision: HEAD
-  syncPolicy:
-    retry:
-      backoff:
-        duration: 15s
-      limit: 6
-    syncOptions:
-    - RespectIgnoreDifferences=true
-    - Retry=true
-    - ServerSideApply=true
-    automated:
-      selfHeal: true
-      prune: true
-      enabled: true
