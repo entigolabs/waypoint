@@ -16,3 +16,5 @@ spec:
       values: |
         ingress:
           host: "waypoint-prod.dev.entigo.dev"
+        database:
+          waypoint-prod-database
