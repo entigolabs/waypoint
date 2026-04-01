@@ -1,13 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: prod-waypoint-application
-  namespace: prod-waypoint
+  name: waypoint-prod-application
+  namespace: waypoint-prod
 spec:
   destination:
     server: https://kubernetes.default.svc
-    namespace: prod-waypoint
-  project: prod-waypoint
+    namespace: waypoint-prod
+  project: waypoint-prod
   source:
     repoURL: ghcr.io/entigolabs/waypoint-helm
     chart: waypoint-helm
