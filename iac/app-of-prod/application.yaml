@@ -17,4 +17,4 @@ spec:
         ingress:
           host: "waypoint-prod.dev.entigo.dev"
         database:
-          waypoint-prod-database
+          releaseName: waypoint-prod-database
