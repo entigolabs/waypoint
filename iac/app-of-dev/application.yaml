@@ -13,4 +13,6 @@ spec:
     chart: waypoint-helm
     targetRevision: 0.0.9
     helm:
-      valuesObject: {}
+      values: |
+        ingress:
+          host: "waypoint-dev.dev.entigo.dev"

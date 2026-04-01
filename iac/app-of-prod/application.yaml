@@ -9,8 +9,10 @@ spec:
     namespace: waypoint-prod
   project: waypoint-prod
   source:
-    repoURL: ghcr.io/entigolabs/waypoint-helm
+    repoURL: ghcr.io/entigolabs
     chart: waypoint-helm
     targetRevision: 0.0.9
     helm:
-      valuesObject: {}
+      values: |
+        ingress:
+          host: "waypoint-prod.dev.entigo.dev"
