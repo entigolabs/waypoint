@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dev-waypoint-application
+  namespace: dev-waypoint
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev-waypoint
+  project: dev-waypoint
+  source:
+    repoURL: ghcr.io/entigolabs/waypoint-helm
+    chart: waypoint-helm
+    targetRevision: 0.0.9
+    helm:
+      valuesObject: {}
