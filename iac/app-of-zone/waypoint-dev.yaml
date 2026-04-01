@@ -28,3 +28,4 @@ metadata:
     pod-security.kubernetes.io/warn: baseline
   annotations:
     argocd.argoproj.io/sync-wave: "1"
+
