@@ -9,7 +9,7 @@ spec:
     namespace: waypoint-dev
   project: waypoint-dev
   source:
-    repoURL: ghcr.io/entigolabs/waypoint-db-helm
+    repoURL: ghcr.io/entigolabs
     chart: waypoint-db-helm
     targetRevision: 0.1.7
     helm:
