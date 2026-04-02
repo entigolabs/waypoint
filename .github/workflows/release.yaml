@@ -208,14 +208,14 @@ jobs:
     steps:
       - name: Refresh and sync database
         run: |
-          argocd app get waypoint-${ENV_NAME}-database --hard-refresh --project waypoint-${ENV_NAME} --grpc-web
-          argocd app sync waypoint-${ENV_NAME}-database --project waypoint-${ENV_NAME} --grpc-web
-          argocd app wait waypoint-${ENV_NAME}-database --project waypoint-${ENV_NAME} --grpc-web --timeout 300
+          argocd app get waypoint-${ENV_NAME}-database --hard-refresh --grpc-web
+          argocd app sync waypoint-${ENV_NAME}-database --grpc-web
+          argocd app wait waypoint-${ENV_NAME}-database --grpc-web --timeout 300
       - name: Refresh and sync application
         run: |
-          argocd app get waypoint-${ENV_NAME}-application --hard-refresh --project waypoint-${ENV_NAME} --grpc-web
-          argocd app sync waypoint-${ENV_NAME}-application --project waypoint-${ENV_NAME} --grpc-web
-          argocd app wait waypoint-${ENV_NAME}-application --project waypoint-${ENV_NAME} --grpc-web --timeout 300
+          argocd app get waypoint-${ENV_NAME}-application --hard-refresh --grpc-web
+          argocd app sync waypoint-${ENV_NAME}-application --grpc-web
+          argocd app wait waypoint-${ENV_NAME}-application --grpc-web --timeout 300
   deploy-prod:
     name: Deploy to prod
     runs-on: arc-runner-set
@@ -230,11 +230,11 @@ jobs:
     steps:
       - name: Refresh and sync database
         run: |
-          argocd app get waypoint-${ENV_NAME}-database --hard-refresh --project waypoint-${ENV_NAME} --grpc-web
-          argocd app sync waypoint-${ENV_NAME}-database --project waypoint-${ENV_NAME} --grpc-web
-          argocd app wait waypoint-${ENV_NAME}-database --project waypoint-${ENV_NAME} --grpc-web --timeout 300
+          argocd app get waypoint-${ENV_NAME}-database --hard-refresh --grpc-web
+          argocd app sync waypoint-${ENV_NAME}-database --grpc-web
+          argocd app wait waypoint-${ENV_NAME}-database --grpc-web --timeout 300
       - name: Refresh and sync application
         run: |
-          argocd app get waypoint-${ENV_NAME}-application --hard-refresh --project waypoint-${ENV_NAME} --grpc-web
-          argocd app sync waypoint-${ENV_NAME}-application --project waypoint-${ENV_NAME} --grpc-web
-          argocd app wait waypoint-${ENV_NAME}-application --project waypoint-${ENV_NAME} --grpc-web --timeout 300
+          argocd app get waypoint-${ENV_NAME}-application --hard-refresh --grpc-web
+          argocd app sync waypoint-${ENV_NAME}-application --grpc-web
+          argocd app wait waypoint-${ENV_NAME}-application --grpc-web --timeout 300
