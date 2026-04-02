@@ -197,7 +197,7 @@ jobs:
 
   deploy-dev:
     needs: [build-helm]
-    uses: ./.github/workflows/deploy-argocd.yml
+    uses: ./.github/workflows/deploy-argocd.yaml
     with:
       environment: dev
       app_name: waypoint
