@@ -200,41 +200,43 @@ jobs:
     needs: [build-helm]
     environment: dev
     container:
-      image: docker.io/entigolabs/entigo-infralib-kubectl:v1.19.20
+      image: 413636892216.dkr.ecr.eu-north-1.amazonaws.com/ep-net-ecr-proxy-hub/entigolabs/entigo-infralib-kubectl:v1.19.20
     env:
       ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
       ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
       ENV_NAME: ${{ vars.ENV_NAME }}
     steps:
+      # Namespace follows pattern: waypoint-{env}
       - name: Refresh and sync database
         run: |
-          argocd app get waypoint-${ENV_NAME}-database --hard-refresh --grpc-web
-          argocd app sync waypoint-${ENV_NAME}-database --grpc-web
-          argocd app wait waypoint-${ENV_NAME}-database --grpc-web --timeout 300
+          argocd app get waypoint-${ENV_NAME}-database --hard-refresh --grpc-web --app-namespace waypoint-${ENV_NAME}
+          argocd app sync waypoint-${ENV_NAME}-database --grpc-web --app-namespace waypoint-${ENV_NAME}
+          argocd app wait waypoint-${ENV_NAME}-database --grpc-web --app-namespace waypoint-${ENV_NAME} --timeout 300
       - name: Refresh and sync application
         run: |
-          argocd app get waypoint-${ENV_NAME}-application --hard-refresh --grpc-web
-          argocd app sync waypoint-${ENV_NAME}-application --grpc-web
-          argocd app wait waypoint-${ENV_NAME}-application --grpc-web --timeout 300
+          argocd app get waypoint-${ENV_NAME}-application --hard-refresh --grpc-web --app-namespace waypoint-${ENV_NAME}
+          argocd app sync waypoint-${ENV_NAME}-application --grpc-web --app-namespace waypoint-${ENV_NAME}
+          argocd app wait waypoint-${ENV_NAME}-application --grpc-web --app-namespace waypoint-${ENV_NAME} --timeout 300
   deploy-prod:
     name: Deploy to prod
     runs-on: arc-runner-set
     needs: [deploy-dev]
     environment: prod
     container:
-      image: docker.io/entigolabs/entigo-infralib-kubectl:v1.19.20
+      image: 413636892216.dkr.ecr.eu-north-1.amazonaws.com/ep-net-ecr-proxy-hub/entigolabs/entigo-infralib-kubectl:v1.19.20
     env:
       ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
       ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
       ENV_NAME: ${{ vars.ENV_NAME }}
     steps:
+      # Namespace follows pattern: waypoint-{env}
       - name: Refresh and sync database
         run: |
-          argocd app get waypoint-${ENV_NAME}-database --hard-refresh --grpc-web
-          argocd app sync waypoint-${ENV_NAME}-database --grpc-web
-          argocd app wait waypoint-${ENV_NAME}-database --grpc-web --timeout 300
+          argocd app get waypoint-${ENV_NAME}-database --hard-refresh --grpc-web --app-namespace waypoint-${ENV_NAME}
+          argocd app sync waypoint-${ENV_NAME}-database --grpc-web --app-namespace waypoint-${ENV_NAME}
+          argocd app wait waypoint-${ENV_NAME}-database --grpc-web --app-namespace waypoint-${ENV_NAME} --timeout 300
       - name: Refresh and sync application
         run: |
-          argocd app get waypoint-${ENV_NAME}-application --hard-refresh --grpc-web
-          argocd app sync waypoint-${ENV_NAME}-application --grpc-web
-          argocd app wait waypoint-${ENV_NAME}-application --grpc-web --timeout 300
+          argocd app get waypoint-${ENV_NAME}-application --hard-refresh --grpc-web --app-namespace waypoint-${ENV_NAME}
+          argocd app sync waypoint-${ENV_NAME}-application --grpc-web --app-namespace waypoint-${ENV_NAME}
+          argocd app wait waypoint-${ENV_NAME}-application --grpc-web --app-namespace waypoint-${ENV_NAME} --timeout 300
