@@ -4,6 +4,8 @@ metadata:
   name: {{ .Release.Name }}-front
   labels:
     app: {{ .Release.Name }}-front
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   replicas: {{ .Values.frontend.replicaCount }}
   selector:
