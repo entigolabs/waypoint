@@ -193,3 +193,27 @@ jobs:
         run: helm package ${{ env.CHART_PATH }}
       - name: Push Helm chart to GHCR
         run: helm push ${{ env.CHART_NAME }}-${{ env.BUILD_VERSION }}.tgz oci://${{ env.REGISTRY }}/${{ github.repository_owner }}
+
+  deploy:
+    name: Deploy to dev
+    runs-on: arc-runner-set
+    needs: [build-helm]
+    container:
+      image: docker.io/entigolabs/entigo-infralib-kubectl:v1.19.20
+    env:
+      ARGOCD_SERVER: argocd.dev-int.entigo.dev
+      ARGOCD_AUTH_TOKEN: ${{ secrets.DEV_ARGOCD_AUTH_TOKEN }}
+    steps:
+      # Hard refresh to pick up the new chart version from OCI registry
+      - name: Refresh database app
+        run: argocd app get waypoint-dev-database --hard-refresh --project waypoint-dev --grpc-web
+      - name: Sync database app
+        run: argocd app sync waypoint-dev-database --project waypoint-dev --grpc-web
+      - name: Wait for database app
+        run: argocd app wait waypoint-dev-database --project waypoint-dev --grpc-web --timeout 300
+      - name: Refresh application app
+        run: argocd app get waypoint-dev-application --hard-refresh --project waypoint-dev --grpc-web
+      - name: Sync application app
+        run: argocd app sync waypoint-dev-application --project waypoint-dev --grpc-web
+      - name: Wait for application app
+        run: argocd app wait waypoint-dev-application --project waypoint-dev --grpc-web --timeout 300
