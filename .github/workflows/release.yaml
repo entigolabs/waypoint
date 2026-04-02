@@ -207,7 +207,7 @@ jobs:
 
   deploy-prod:
     needs: [deploy-dev]
-    uses: ./.github/workflows/deploy-argocd.yml
+    uses: ./.github/workflows/deploy-argocd.yaml
     with:
       environment: prod
       app_name: waypoint
