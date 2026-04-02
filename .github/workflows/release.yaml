@@ -186,9 +186,10 @@ jobs:
         run: |
           VERSION="${{ needs.version.outputs.version }}"
           VERSION="${VERSION#v}"
-          yq -i ".version = \"$VERSION\"" ${{ env.CHART_PATH }}/Chart.yaml
+          # Publish as RC for dev
+          yq -i ".version = \"${VERSION}-rc\"" ${{ env.CHART_PATH }}/Chart.yaml
           yq -i ".appVersion = \"${{ needs.version.outputs.version }}\"" ${{ env.CHART_PATH }}/Chart.yaml
-          echo "BUILD_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "BUILD_VERSION=${VERSION}-rc" >> $GITHUB_ENV
       - name: Package Helm chart
         run: helm package ${{ env.CHART_PATH }}
       - name: Push Helm chart to GHCR
@@ -205,8 +206,32 @@ jobs:
       ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
       ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
 
+  promote-helm:
+    name: Promote Helm chart to stable
+    runs-on: ubuntu-latest
+    environment: prod
+    needs: [dev, version]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: azure/setup-helm@v5
+      - uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Package and push stable version
+        run: |
+          VERSION="${{ needs.version.outputs.version }}"
+          VERSION="${VERSION#v}"
+          # Set stable version (no -rc suffix)
+          yq -i ".version = \"${VERSION}\"" ${{ env.CHART_PATH }}/Chart.yaml
+          yq -i ".appVersion = \"${{ needs.version.outputs.version }}\"" ${{ env.CHART_PATH }}/Chart.yaml
+          helm package ${{ env.CHART_PATH }}
+          helm push ${{ env.CHART_NAME }}-${VERSION}.tgz \
+            oci://${{ env.REGISTRY }}/${{ github.repository_owner }}
+
   prod:
-    needs: [dev]
+    needs: [promote-helm]
     uses: ./.github/workflows/deploy-argocd.yaml
     with:
       environment: prod

@@ -11,6 +11,6 @@ spec:
   source:
     repoURL: ghcr.io/entigolabs
     chart: waypoint-db-helm
-    targetRevision: "*.*.*"
+    targetRevision: "*.*.*-0"
     helm:
       valuesObject: {}
