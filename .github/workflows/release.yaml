@@ -195,7 +195,7 @@ jobs:
         run: helm push ${{ env.CHART_NAME }}-${{ env.BUILD_VERSION }}.tgz oci://${{ env.REGISTRY }}/${{ github.repository_owner }}
 
 
-  deploy-dev:
+  dev:
     needs: [build-helm]
     uses: ./.github/workflows/deploy-argocd.yaml
     with:
@@ -205,8 +205,8 @@ jobs:
       ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
       ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
 
-  deploy-prod:
-    needs: [deploy-dev]
+  prod:
+    needs: [dev]
     uses: ./.github/workflows/deploy-argocd.yaml
     with:
       environment: prod

@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: ghcr.io/entigolabs
     chart: waypoint-helm
-    targetRevision: 0.0.9
+    targetRevision: "*.*.*"
     helm:
       values: |
         ingress:
