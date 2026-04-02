@@ -194,49 +194,23 @@ jobs:
       - name: Push Helm chart to GHCR
         run: helm push ${{ env.CHART_NAME }}-${{ env.BUILD_VERSION }}.tgz oci://${{ env.REGISTRY }}/${{ github.repository_owner }}
 
+
   deploy-dev:
-    name: Deploy to dev
-    runs-on: arc-runner-set
     needs: [build-helm]
-    environment: dev
-    container:
-      image: 413636892216.dkr.ecr.eu-north-1.amazonaws.com/ep-net-ecr-proxy-hub/entigolabs/entigo-infralib-kubectl:v1.19.20
-    env:
+    uses: ./.github/workflows/deploy-argocd.yml
+    with:
+      environment: dev
+      app_name: waypoint
+    secrets:
       ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
       ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
-      ENV_NAME: ${{ vars.ENV_NAME }}
-    steps:
-      # Namespace follows pattern: waypoint-{env}
-      - name: Refresh and sync database
-        run: |
-          argocd app get waypoint-${ENV_NAME}-database --hard-refresh --grpc-web --app-namespace waypoint-${ENV_NAME}
-          argocd app sync waypoint-${ENV_NAME}-database --grpc-web --app-namespace waypoint-${ENV_NAME}
-          argocd app wait waypoint-${ENV_NAME}-database --grpc-web --app-namespace waypoint-${ENV_NAME} --timeout 300
-      - name: Refresh and sync application
-        run: |
-          argocd app get waypoint-${ENV_NAME}-application --hard-refresh --grpc-web --app-namespace waypoint-${ENV_NAME}
-          argocd app sync waypoint-${ENV_NAME}-application --grpc-web --app-namespace waypoint-${ENV_NAME}
-          argocd app wait waypoint-${ENV_NAME}-application --grpc-web --app-namespace waypoint-${ENV_NAME} --timeout 300
+
   deploy-prod:
-    name: Deploy to prod
-    runs-on: arc-runner-set
     needs: [deploy-dev]
-    environment: prod
-    container:
-      image: 413636892216.dkr.ecr.eu-north-1.amazonaws.com/ep-net-ecr-proxy-hub/entigolabs/entigo-infralib-kubectl:v1.19.20
-    env:
+    uses: ./.github/workflows/deploy-argocd.yml
+    with:
+      environment: prod
+      app_name: waypoint
+    secrets:
       ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
       ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
-      ENV_NAME: ${{ vars.ENV_NAME }}
-    steps:
-      # Namespace follows pattern: waypoint-{env}
-      - name: Refresh and sync database
-        run: |
-          argocd app get waypoint-${ENV_NAME}-database --hard-refresh --grpc-web --app-namespace waypoint-${ENV_NAME}
-          argocd app sync waypoint-${ENV_NAME}-database --grpc-web --app-namespace waypoint-${ENV_NAME}
-          argocd app wait waypoint-${ENV_NAME}-database --grpc-web --app-namespace waypoint-${ENV_NAME} --timeout 300
-      - name: Refresh and sync application
-        run: |
-          argocd app get waypoint-${ENV_NAME}-application --hard-refresh --grpc-web --app-namespace waypoint-${ENV_NAME}
-          argocd app sync waypoint-${ENV_NAME}-application --grpc-web --app-namespace waypoint-${ENV_NAME}
-          argocd app wait waypoint-${ENV_NAME}-application --grpc-web --app-namespace waypoint-${ENV_NAME} --timeout 300
