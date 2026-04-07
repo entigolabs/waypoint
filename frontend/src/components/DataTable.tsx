@@ -72,10 +72,10 @@ export const DataTable = <T extends object>({ title, columns, rowKey, fetchData,
 
     return (
         <>
-            <Title level={ 3 } style={ { marginBottom: 20 } }>
-                { title }
-            </Title>
             <Card className={ styles.card }>
+                <Title level={ 2 }>
+                    { title }
+                </Title>
                 { error ? (
                     <Alert type="error" title={ alertMessage } description={ error.message } showIcon />
                 ) : (
