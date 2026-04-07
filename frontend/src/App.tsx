@@ -35,7 +35,7 @@ const App: React.FC = () => {
                     color="var(--custom-tooltip-bg)"
                     mouseLeaveDelay={ 0.2 }
                 >
-                    <Text type="secondary" ellipsis>
+                    <Text ellipsis>
                         { `${ apiUrl }/api` }
                     </Text>
                 </Tooltip>
