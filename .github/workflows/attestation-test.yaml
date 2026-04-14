@@ -1,4 +1,4 @@
-name: Attestation
+name: Attestation pushing test
 
 on:
   workflow_dispatch:

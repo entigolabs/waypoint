@@ -36,7 +36,17 @@ The release pipeline is triggered by a version tag (`vX.Y.Z`) and:
 2. Builds and publishes Docker images for the backend, database migrations, and frontend to GHCR with build provenance attestations.
 3. Packages and publishes the `waypoint-helm` Helm chart to GHCR.
 
-The database Helm chart (`waypoint-db-helm`) is versioned and published independently on every merge to `main`.
+The database Helm chart (`waypoint-db-helm`) is versioned and published independently on every merge to `main` that modifies `backend/db` files.
+
+## Attestations
+
+To view the build provenance attestations for the published images, you can use the `docker buildx imagetools`. For example:
+
+```bash
+docker buildx imagetools inspect ghcr.io/entigolabs/waypoint:latest --format '{{json .SBOM}}'
+docker buildx imagetools inspect ghcr.io/entigolabs/waypoint-front:latest --format '{{json .SBOM}}'
+docker buildx imagetools inspect ghcr.io/entigolabs/waypoint-db:latest --format '{{json .SBOM}}'
+```
 
 ## Deployment
 
