@@ -1,6 +1,6 @@
 import { Alert, Card, Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Errors } from '../client';
 import styles from './DashboardView.module.scss';
 
@@ -38,6 +38,16 @@ export const DataTable = <T extends object>({ title, columns, rowKey, fetchData,
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<ErrorState | null>(null);
     const [pageSize, setPageSize] = useState(20);
+    const tableWrapperRef = useRef<HTMLDivElement>(null);
+
+    useEffect(function makeScrollContainerFocusable() {
+        const scrollEl = tableWrapperRef.current?.querySelector<HTMLElement>('.ant-table-content, .ant-table-body');
+        if (scrollEl) {
+            scrollEl.setAttribute('tabindex', '0');
+            scrollEl.setAttribute('role', 'region');
+            scrollEl.setAttribute('aria-label', `${ title } table`);
+        }
+    }, [title]);
 
     useEffect(function onComponentMountFetchData() {
         fetchData()
@@ -62,22 +72,24 @@ export const DataTable = <T extends object>({ title, columns, rowKey, fetchData,
 
     return (
         <>
-            <Title level={ 4 } style={ { marginBottom: 20 } }>
-                { title }
-            </Title>
             <Card className={ styles.card }>
+                <Title level={ 2 }>
+                    { title }
+                </Title>
                 { error ? (
                     <Alert type="error" title={ alertMessage } description={ error.message } showIcon />
                 ) : (
-                    <Table
-                        dataSource={ data }
-                        columns={ columns }
-                        rowKey={ rowKey }
-                        size="small"
-                        loading={ loading }
-                        pagination={ { pageSize, showSizeChanger: true, onShowSizeChange: (_, size) => setPageSize(size) } }
-                        scroll={ { x: 'max-content' } }
-                    />
+                    <div ref={ tableWrapperRef }>
+                        <Table
+                            dataSource={ data }
+                            columns={ columns }
+                            rowKey={ rowKey }
+                            size="small"
+                            loading={ loading }
+                            pagination={ { pageSize, showSizeChanger: true, onShowSizeChange: (_, size) => setPageSize(size) } }
+                            scroll={ { x: 'max-content' } }
+                        />
+                    </div>
                 ) }
             </Card>
         </>

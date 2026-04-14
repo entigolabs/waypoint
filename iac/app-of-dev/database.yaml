@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: waypoint-dev-database
+  namespace: waypoint-dev
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: waypoint-dev
+  project: waypoint-dev
+  source:
+    repoURL: ghcr.io/entigolabs
+    chart: waypoint-db-helm
+    targetRevision: "*.*.*-0"
+    helm:
+      valuesObject: {}

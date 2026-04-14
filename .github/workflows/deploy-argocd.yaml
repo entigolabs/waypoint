@@ -1,0 +1,42 @@
+# Reusable workflow for ArgoCD deployment
+name: Deploy ArgoCD
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      app_name:
+        required: true
+        type: string
+    secrets:
+      ARGOCD_SERVER:
+        required: true
+      ARGOCD_AUTH_TOKEN:
+        required: true
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: arc-runner-set
+    environment: ${{ inputs.environment }}
+    container:
+      image: docker.io/entigolabs/entigo-infralib-kubectl:v1.19.20
+    env:
+      ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
+      ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+      ENV_NAME: ${{ inputs.environment }}
+      APP_NAME: ${{ inputs.app_name }}
+    steps:
+      # Hard refresh to pick up the new chart version from OCI registry
+      - name: Refresh and sync database
+        run: |
+          argocd app get ${APP_NAME}-${ENV_NAME}-database --hard-refresh --grpc-web --app-namespace ${APP_NAME}-${ENV_NAME}
+          argocd app sync ${APP_NAME}-${ENV_NAME}-database --grpc-web --app-namespace ${APP_NAME}-${ENV_NAME}
+          argocd app wait ${APP_NAME}-${ENV_NAME}-database --grpc-web --app-namespace ${APP_NAME}-${ENV_NAME} --timeout 300
+      - name: Refresh and sync application
+        run: |
+          argocd app get ${APP_NAME}-${ENV_NAME}-application --hard-refresh --grpc-web --app-namespace ${APP_NAME}-${ENV_NAME}
+          argocd app sync ${APP_NAME}-${ENV_NAME}-application --grpc-web --app-namespace ${APP_NAME}-${ENV_NAME}
+          argocd app wait ${APP_NAME}-${ENV_NAME}-application --grpc-web --app-namespace ${APP_NAME}-${ENV_NAME} --timeout 300
