@@ -53,3 +53,15 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+      - uses: anchore/sbom-action@v0
+        with:
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}
+          format: cyclonedx-json
+          output-file: sbom.cdx.json
+      - uses: actions/attest@v4
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          predicate-type: https://cyclonedx.org/bom
+          predicate-path: sbom.cdx.json
+          push-to-registry: true
