@@ -41,13 +41,25 @@ The database Helm chart (`waypoint-db-helm`) is versioned and published independ
 
 ## Attestations
 
-To view the build provenance attestations for the published images, you can use the `docker buildx imagetools`. For example:
+Build provenance and SBOMs are attached to each image by BuildKit. To inspect:
 
 ```bash
+docker buildx imagetools inspect ghcr.io/entigolabs/waypoint:latest --format '{{json .Provenance}}'
 docker buildx imagetools inspect ghcr.io/entigolabs/waypoint:latest --format '{{json .SBOM}}'
-docker buildx imagetools inspect ghcr.io/entigolabs/waypoint-front:latest --format '{{json .SBOM}}'
-docker buildx imagetools inspect ghcr.io/entigolabs/waypoint-db:latest --format '{{json .SBOM}}'
 ```
+
+Build provenance and CycloneDX SBOMs are also attested via GitHub Attestations. To verify and download with GitHub CLI:
+
+```bash
+# Verify provenance
+gh attestation verify oci://ghcr.io/entigolabs/waypoint:latest --owner entigolabs
+
+# Verify and download SBOM
+gh attestation verify oci://ghcr.io/entigolabs/waypoint:latest --owner entigolabs --predicate-type https://cyclonedx.org/bom
+gh attestation download oci://ghcr.io/entigolabs/waypoint:latest --owner entigolabs --predicate-type https://cyclonedx.org/bom
+```
+
+The above commands apply to all three images: `waypoint`, `waypoint-front`, and `waypoint-db`.
 
 ## Deployment
 
