@@ -13,6 +13,8 @@ on:
 permissions:
   contents: read
   packages: write
+  attestations: write
+  id-token: write
 
 env:
   REGISTRY: ghcr.io
@@ -81,7 +83,8 @@ jobs:
           tags: |
             type=raw,value=${{ needs.version.outputs.version }}
             type=raw,value=latest
-      - uses: docker/build-push-action@v7
+      - id: push
+        uses: docker/build-push-action@v7
         with:
           build-args: |
             GITHUB_SHA=${{ github.sha }}
@@ -95,6 +98,18 @@ jobs:
           platforms: linux/arm64,linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - uses: anchore/sbom-action@v0
+        with:
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}
+          format: cyclonedx-json
+          output-file: sbom.cdx.json
+      - uses: actions/attest@v4
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          predicate-type: https://cyclonedx.org/bom
+          predicate-path: sbom.cdx.json
+          push-to-registry: true
 
   build-db:
     name: Build DB
@@ -115,7 +130,8 @@ jobs:
           tags: |
             type=raw,value=${{ needs.version.outputs.version }}
             type=raw,value=latest
-      - uses: docker/build-push-action@v7
+      - id: push
+        uses: docker/build-push-action@v7
         with:
           context: backend/db
           file: backend/db/Dockerfile
@@ -127,6 +143,18 @@ jobs:
           platforms: linux/arm64,linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - uses: anchore/sbom-action@v0
+        with:
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}-db@${{ steps.push.outputs.digest }}
+          format: cyclonedx-json
+          output-file: sbom.cdx.json
+      - uses: actions/attest@v4
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}-db
+          subject-digest: ${{ steps.push.outputs.digest }}
+          predicate-type: https://cyclonedx.org/bom
+          predicate-path: sbom.cdx.json
+          push-to-registry: true
 
   build-front:
     name: Build frontend
@@ -159,7 +187,8 @@ jobs:
           tags: |
             type=raw,value=${{ needs.version.outputs.version }}
             type=raw,value=latest
-      - uses: docker/build-push-action@v7
+      - id: push
+        uses: docker/build-push-action@v7
         with:
           context: frontend
           file: frontend/Dockerfile
@@ -169,6 +198,18 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/arm64,linux/amd64
+      - uses: anchore/sbom-action@v0
+        with:
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}-front@${{ steps.push.outputs.digest }}
+          format: cyclonedx-json
+          output-file: sbom.cdx.json
+      - uses: actions/attest@v4
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}-front
+          subject-digest: ${{ steps.push.outputs.digest }}
+          predicate-type: https://cyclonedx.org/bom
+          predicate-path: sbom.cdx.json
+          push-to-registry: true
 
   build-helm:
     name: Build Helm chart
