@@ -1,9 +1,9 @@
 create table core.categories
 (
-    id          integer not null,
-    name        text    not null,
-    description text,
-    ems_ids     text[]  not null default '{}',
+    id          integer      not null,
+    name        varchar(200) not null,
+    description varchar(500),
+    ems_ids     text[]       not null default '{}',
 
     constraint categories_pk primary key (id)
 );
@@ -11,8 +11,8 @@ call sys.grant_permissions_to_role('delete', 'core.categories', '{{.coreRWRole}}
 
 create table core.ems_categories
 (
-    id   uuid not null,
-    name text not null,
+    id   uuid         not null,
+    name varchar(200) not null,
 
     constraint ems_categories_pk primary key (id)
 );
@@ -20,9 +20,9 @@ call sys.grant_permissions_to_role('delete', 'core.ems_categories', '{{.coreRWRo
 
 create table core.ems_themes
 (
-    id             uuid    not null default gen_random_uuid(),
-    code           text    not null,
-    datasets_count integer not null default 0,
+    id             uuid        not null default gen_random_uuid(),
+    code           varchar(20) not null,
+    datasets_count integer     not null default 0,
 
     constraint ems_themes_pk primary key (id),
     constraint ems_themes_code_unique unique (code)
@@ -31,11 +31,11 @@ call sys.grant_permissions_to_role('delete', 'core.ems_themes', '{{.coreRWRole}}
 
 create table core.ems_theme_translations
 (
-    id           integer not null,
-    ems_theme_id uuid    not null,
-    language     text    not null,
-    value        text    not null,
-    description  text,
+    id           integer      not null,
+    ems_theme_id uuid         not null,
+    language     varchar(10)  not null,
+    value        varchar(200) not null,
+    description  varchar(500),
     created_at   timestamptz,
     updated_at   timestamptz,
 

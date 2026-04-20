@@ -46,8 +46,55 @@ Server includes all public endpoints from the `openapi.yaml` spec under `/api` p
 
 Database migrations are managed using [tern](https://github.com/jackc/tern/tree/master).
 
-Running database migrations for development:
+Database schema:
+
+```mermaid
+erDiagram
+    categories {
+        integer id PK
+        text name
+        text description
+        text[] ems_ids
+    }
+
+    ems_categories {
+        uuid id PK
+        text name
+    }
+
+    ems_themes {
+        uuid id PK
+        text code UK
+        integer datasets_count
+    }
+
+    ems_theme_translations {
+        integer id PK
+        uuid ems_theme_id FK
+        text language
+        text value
+        text description
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    ems_theme_ems_categories {
+        uuid ems_theme_id PK,FK
+        uuid ems_category_id PK,FK
+    }
+
+    collection_metadata {
+        integer id PK
+        timestamptz last_collected_at
+    }
+
+    ems_themes ||--o{ ems_theme_translations : "has translations"
+    ems_themes ||--o{ ems_theme_ems_categories : "belongs to"
+    ems_categories ||--o{ ems_theme_ems_categories : "contains"
 ```
+
+Running database migrations for development:
+```shell
 go install github.com/jackc/tern/v2@latest
 tern code install setup/postgres/local --config setup/postgres/tern.conf
 tern migrate --migrations db/migrations --config setup/postgres/tern.conf

@@ -1,6 +1,6 @@
 # Waypoint
 
-Waypoint is a demo application that showcases automated application provisioning into a Kubernetes cluster using [Entigo Infralib](https://github.com/entigolabs/entigo-infralib). It demonstrates data gathering from an external public API, storing the results in a database, and serving them through a web interface. Capable of running as multiple replicas for redundancy.
+Waypoint is a demo application that showcases automated application provisioning into a Kubernetes cluster provisioned to AWS using [Entigo Infralib](https://github.com/entigolabs/entigo-infralib). It demonstrates data gathering from an external public API, storing the results in a database, and serving them through a web interface. Capable of running as multiple replicas for redundancy.
 
 The application is API-first: both components generate their client and server code from a shared [OpenAPI specification](./openapi.yaml).
 
@@ -35,6 +35,7 @@ The release pipeline is triggered by a version tag (`vX.Y.Z`) and:
 1. Runs all quality gates.
 2. Builds and publishes Docker images for the backend, database migrations, and frontend to GHCR with build provenance attestations.
 3. Packages and publishes the `waypoint-helm` Helm chart to GHCR.
+4. On successful release, the package is deployed to the `dev` environment.
 
 The database Helm chart (`waypoint-db-helm`) is versioned and published independently on every merge to `main` that modifies `backend/db` files.
 
@@ -50,11 +51,20 @@ docker buildx imagetools inspect ghcr.io/entigolabs/waypoint-db:latest --format 
 
 ## Deployment
 
-Prerequisites: a Kubernetes cluster with ArgoCD.
+Prerequisites: a Kubernetes cluster with ArgoCD provisioned by Entigo Infralib into AWS.
 
-## ArgoCD application examples
+### ArgoCD application examples
 
-Database needs to be deployed and synced before the Waypoint application.
+> **Important:** The database application must be deployed and synced before the Waypoint application.
+
+`waypoint-db-helm` uses the Entigo Platform API to provision:
+1. An RDS instance with a waypoint database.
+2. A PostgreSQL OWNER role (without login) and a user that inherits it.
+
+`waypoint-helm` provisions in order:
+1. A database migration job using the owner credentials.
+2. An application database user with read/write permissions.
+3. Backend and frontend deployments with AWS ALB Ingress.
 
 ### Waypoint database application
 
